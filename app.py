@@ -247,6 +247,10 @@ if uploaded_file:
 
         st.write(result)
 
+        if result.get("metadata"):
+            st.subheader("Extracted Metadata")
+            st.json(result["metadata"])
+
         if st.button(
             f"Rerun AI - Page {page_num + 1}",
             key=f"rerun_{page_num}"
