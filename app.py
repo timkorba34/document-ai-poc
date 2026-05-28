@@ -41,8 +41,34 @@ def analyze_page(image, page_number):
         }
 
 # -------------------------
-# STREAMLIT UI
+# Group Documents
 # -------------------------
+
+def group_documents(results):
+    documents = []
+    current_document = None
+
+    for result in results:
+        if result["is_new_document"] or current_document is None:
+            current_document = {
+                "document_number": len(documents) + 1,
+                "document_type": result["document_type"],
+                "start_page": result["page"],
+                "end_page": result["page"],
+                "confidence": result["confidence"],
+                "review_needed": result["review_needed"]
+            }
+            documents.append(current_document)
+        else:
+            current_document["end_page"] = result["page"]
+
+            if result["confidence"] < current_document["confidence"]:
+                current_document["confidence"] = result["confidence"]
+
+            if result["review_needed"]:
+                current_document["review_needed"] = True
+
+    return documents
 
 # -------------------------
 # STREAMLIT UI
