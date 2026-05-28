@@ -157,47 +157,53 @@ if uploaded_file:
     st.subheader("Page Previews")
 
     results = []
-
-    st.subheader("Grouped Documents")
-
-    documents = group_documents(results)
-    
-    doc_df = pd.DataFrame(documents)
-    
-    st.dataframe(doc_df, use_container_width=True
-
     previous_page_text = ""
 
     for page_num in range(total_pages):
 
         page = pdf_document[page_num]
-    
+
         pix = page.get_pixmap(
             matrix=fitz.Matrix(1.5, 1.5)
         )
-    
+
         img_bytes = pix.tobytes("png")
-    
+
         image = Image.open(
             io.BytesIO(img_bytes)
         )
-    
-        # OCR TEXT EXTRACTION
+
         page_text = extract_text_from_page(page)
-    
-        # AI ANALYSIS
+
         result = analyze_page(
             image,
             page_num + 1,
-            page_text
+            page_text,
+            previous_page_text
         )
-    
+
         results.append(result)
-    
+
+        previous_page_text = page_text
+
         st.image(
             image,
             caption=f"Page {page_num + 1}",
             width=350
         )
-    
+
         st.write(result)
+
+    st.subheader("AI Segmentation Results")
+
+    df = pd.DataFrame(results)
+
+    st.dataframe(df, use_container_width=True)
+
+    st.subheader("Grouped Documents")
+
+    documents = group_documents(results)
+
+    doc_df = pd.DataFrame(documents)
+
+    st.dataframe(doc_df, use_container_width=True)
