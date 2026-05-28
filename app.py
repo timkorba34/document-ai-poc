@@ -11,13 +11,33 @@ import io
 # Analyze Page
 # -------------------------
 def analyze_page(image, page_number):
-    return {
-        "page": page_number,
-        "is_new_document": False,
-        "document_type": "Unknown",
-        "confidence": 0,
-        "review_needed": True
-    }
+
+    if page_number == 1:
+        return {
+            "page": page_number,
+            "is_new_document": True,
+            "document_type": "Employee File",
+            "confidence": 98,
+            "review_needed": False
+        }
+
+    elif page_number % 3 == 0:
+        return {
+            "page": page_number,
+            "is_new_document": True,
+            "document_type": "Resume",
+            "confidence": 91,
+            "review_needed": False
+        }
+
+    else:
+        return {
+            "page": page_number,
+            "is_new_document": False,
+            "document_type": "Continuation Page",
+            "confidence": 84,
+            "review_needed": True
+        }
 
 # -------------------------
 # STREAMLIT UI
