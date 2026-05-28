@@ -230,12 +230,12 @@ if uploaded_file:
 
         if st.button(f"Rerun AI - Page {page_num + 1}"):
     
-        rerun_result = analyze_page(
-            image,
-            page_num + 1,
-            page_text,
-            previous_page_text
-        )
+            rerun_result = analyze_page(
+                image,
+                page_num + 1,
+                page_text,
+                previous_page_text
+            )
     
         st.write("Rerun Result:")
     st.write(rerun_result)
