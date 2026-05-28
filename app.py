@@ -297,19 +297,19 @@ if uploaded_file:
 
     with tab1:
 
-    st.subheader("Approved Documents")
-
-    for doc in approved_docs:
-
-        with st.container(border=True):
-
-            st.write(f"### Document {doc['document_number']}")
-
-            st.write(f"Type: {doc['document_type']}")
-            st.write(f"Pages: {doc['start_page']}–{doc['end_page']}")
-            st.write(f"Confidence: {doc['confidence']}%")
-
-            st.success("Approved")
+        st.subheader("Approved Documents")
+    
+        for doc in approved_docs:
+    
+            with st.container(border=True):
+    
+                st.write(f"### Document {doc['document_number']}")
+    
+                st.write(f"Type: {doc['document_type']}")
+                st.write(f"Pages: {doc['start_page']}–{doc['end_page']}")
+                st.write(f"Confidence: {doc['confidence']}%")
+    
+                st.success("Approved")
 
 
     with tab2:
