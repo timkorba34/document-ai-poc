@@ -280,177 +280,147 @@ if uploaded_file:
     approved_docs = [
     doc for doc in documents
     if not doc["review_needed"]
-    ]
-    
-    review_docs = [
-        doc for doc in documents
-        if doc["review_needed"]
-    ]
-    
-    tab1, tab2, tab3 = st.tabs(
-        [
-            "Approved",
-            "Review Needed",
-            "Manual Reorganization"
-        ]
-    )
+]
 
-    with tab1:
+review_docs = [
+    doc for doc in documents
+    if doc["review_needed"]
+]
 
-        st.subheader("Approved Documents")
-    
-        for doc in approved_docs:
-    
+tab1, tab2, tab3, tab4 = st.tabs(
+    [
+        "Batch Overview",
+        "Approved",
+        "Review Needed",
+        "Manual Reorganization"
+    ]
+)
+
+with tab1:
+
+    st.subheader("Batch Overview")
+
+    cols = st.columns(4)
+
+    for i, doc in enumerate(documents):
+
+        with cols[i % 4]:
+
             with st.container(border=True):
-    
-                st.write(f"### Document {doc['document_number']}")
+
+                st.write(f"**Doc {doc['document_number']}**")
 
                 preview_page = pdf_document[doc["start_page"] - 1]
-
-                preview_pix = preview_page.get_pixmap(
-                    matrix=fitz.Matrix(0.8, 0.8)
-                )
-                
+                preview_pix = preview_page.get_pixmap(matrix=fitz.Matrix(0.5, 0.5))
                 preview_bytes = preview_pix.tobytes("png")
-                
-                preview_image = Image.open(
-                    io.BytesIO(preview_bytes)
-                )
-                
-                st.image(
-                    preview_image,
-                    width=150
-                )
-    
-                st.write(f"Type: {doc['document_type']}")
-                st.write(f"Pages: {doc['start_page']}–{doc['end_page']}")
-                st.write(f"Confidence: {doc['confidence']}%")
-    
+                preview_image = Image.open(io.BytesIO(preview_bytes))
+
+                st.image(preview_image, width=120)
+
+                st.caption(f"{doc['document_type']}")
+                st.caption(f"Pages {doc['start_page']}–{doc['end_page']}")
+                st.caption(f"Confidence: {doc['confidence']}%")
+
+                if doc["review_needed"]:
+                    st.warning("Needs Review")
+                else:
+                    st.success("Approved")
+
+
+with tab2:
+
+    st.subheader("Approved Documents")
+
+    cols = st.columns(4)
+
+    for i, doc in enumerate(approved_docs):
+
+        with cols[i % 4]:
+
+            with st.container(border=True):
+
+                st.write(f"**Doc {doc['document_number']}**")
+
+                preview_page = pdf_document[doc["start_page"] - 1]
+                preview_pix = preview_page.get_pixmap(matrix=fitz.Matrix(0.5, 0.5))
+                preview_bytes = preview_pix.tobytes("png")
+                preview_image = Image.open(io.BytesIO(preview_bytes))
+
+                st.image(preview_image, width=120)
+
+                st.caption(f"{doc['document_type']}")
+                st.caption(f"Pages {doc['start_page']}–{doc['end_page']}")
+                st.caption(f"Confidence: {doc['confidence']}%")
+
                 st.success("Approved")
 
 
-    with tab2:
-    
-        st.subheader("Documents Requiring Review")
-    
-        for doc in review_docs:
-    
+with tab3:
+
+    st.subheader("Documents Requiring Review")
+
+    cols = st.columns(4)
+
+    for i, doc in enumerate(review_docs):
+
+        with cols[i % 4]:
+
             with st.container(border=True):
-    
-                st.write(f"### Document {doc['document_number']}")
+
+                st.write(f"**Doc {doc['document_number']}**")
 
                 preview_page = pdf_document[doc["start_page"] - 1]
-
-                preview_pix = preview_page.get_pixmap(
-                    matrix=fitz.Matrix(0.8, 0.8)
-                )
-                
+                preview_pix = preview_page.get_pixmap(matrix=fitz.Matrix(0.5, 0.5))
                 preview_bytes = preview_pix.tobytes("png")
-                
-                preview_image = Image.open(
-                    io.BytesIO(preview_bytes)
-                )
-                
-                st.image(
-                    preview_image,
-                    width=150
-                )
-    
-                st.write(f"Type: {doc['document_type']}")
-                st.write(f"Pages: {doc['start_page']}–{doc['end_page']}")
-                st.write(f"Confidence: {doc['confidence']}%")
-    
-                col1, col2, col3 = st.columns(3)
-    
-                with col1:
-    
-                    st.button(
-                        f"Approve Doc {doc['document_number']}",
-                        key=f"approve_doc_{doc['document_number']}"
-                    )
-    
-                with col2:
-    
-                    st.button(
-                        f"Rerun Doc {doc['document_number']}",
-                        key=f"rerun_doc_{doc['document_number']}"
-                    )
-    
-                with col3:
-    
-                    st.selectbox(
-                        "Move to Document",
-                        [d["document_number"] for d in documents],
-                        key=f"move_doc_{doc['document_number']}"
-                    )
-    
-    
-    with tab3:
-    
-        st.subheader("Manual Page Reorganization")
-    
-        page_to_move = st.number_input(
-            "Page to Move",
-            min_value=1,
-            max_value=total_pages,
-            step=1
+                preview_image = Image.open(io.BytesIO(preview_bytes))
+
+                st.image(preview_image, width=120)
+
+                st.caption(f"{doc['document_type']}")
+                st.caption(f"Pages {doc['start_page']}–{doc['end_page']}")
+                st.caption(f"Confidence: {doc['confidence']}%")
+
+                st.warning("Needs Review")
+
+                if st.button(
+                    f"Approve Doc {doc['document_number']}",
+                    key=f"approve_review_doc_{doc['document_number']}"
+                ):
+                    st.session_state.review_actions[doc["document_number"]] = "Approved"
+
+                if st.button(
+                    f"Rerun Doc {doc['document_number']}",
+                    key=f"rerun_review_doc_{doc['document_number']}"
+                ):
+                    st.session_state.review_actions[doc["document_number"]] = "Rerun Requested"
+
+
+with tab4:
+
+    st.subheader("Manual Page Reorganization")
+
+    st.info("Use this section to mark page moves before final export.")
+
+    page_to_move = st.number_input(
+        "Page to Move",
+        min_value=1,
+        max_value=total_pages,
+        step=1
+    )
+
+    target_document = st.selectbox(
+        "Move Page To Document",
+        [doc["document_number"] for doc in documents],
+        key="manual_target_doc"
+    )
+
+    if st.button("Apply Page Move"):
+
+        st.session_state.review_actions[f"move_page_{page_to_move}"] = {
+            "page": page_to_move,
+            "target_document": target_document
+        }
+
+        st.success(
+            f"Page {page_to_move} marked to move to Document {target_document}"
         )
-    
-        target_document = st.selectbox(
-            "Move Page To Document",
-            [doc["document_number"] for doc in documents],
-            key="manual_target_doc"
-        )
-    
-        st.button("Apply Page Move")
-
-    for doc in documents:
-
-        pdf_bytes_output = create_separated_pdf(
-            pdf_document,
-            doc["start_page"],
-            doc["end_page"]
-        )
-
-        st.download_button(
-            label=f"Download Document {doc['document_number']} - {doc['document_type']}",
-            data=pdf_bytes_output,
-            file_name=f"Document_{doc['document_number']}_{doc['document_type'].replace(' ', '_')}.pdf",
-            mime="application/pdf",
-            key=f"download_{doc['document_number']}"
-        )
-
-        st.subheader("Reviewer Actions Summary")
-
-        if st.session_state.review_actions:
-            review_df = pd.DataFrame([
-                {
-                    "page": page + 1,
-                    "review_action": action
-                }
-                for page, action in st.session_state.review_actions.items()
-            ])
-        
-            st.dataframe(review_df, use_container_width=True)
-        else:
-            st.info("No reviewer actions recorded yet.")
-
-
-        if st.session_state.review_actions:
-
-            export_review_df = pd.DataFrame([
-                {
-                    "page": page + 1,
-                    "review_action": action
-                }
-                for page, action in st.session_state.review_actions.items()
-            ])
-        
-            csv_data = export_review_df.to_csv(index=False)
-        
-            st.download_button(
-                label="Download Reviewer Actions CSV",
-                data=csv_data,
-                file_name="reviewer_actions.csv",
-                mime="text/csv"
-            )
