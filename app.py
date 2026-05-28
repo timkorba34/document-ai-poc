@@ -376,3 +376,23 @@ if uploaded_file:
             st.dataframe(review_df, use_container_width=True)
         else:
             st.info("No reviewer actions recorded yet.")
+
+
+        if st.session_state.review_actions:
+
+            export_review_df = pd.DataFrame([
+                {
+                    "page": page + 1,
+                    "review_action": action
+                }
+                for page, action in st.session_state.review_actions.items()
+            ])
+        
+            csv_data = export_review_df.to_csv(index=False)
+        
+            st.download_button(
+                label="Download Reviewer Actions CSV",
+                data=csv_data,
+                file_name="reviewer_actions.csv",
+                mime="text/csv"
+            )
