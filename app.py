@@ -340,6 +340,53 @@ if uploaded_file:
 
     documents = group_documents(results)
 
+    st.subheader("Document Review Dashboard")
+
+    for doc in documents:
+    
+        with st.container(border=True):
+    
+            col1, col2, col3, col4 = st.columns(4)
+    
+            with col1:
+                st.metric("Document", doc["document_number"])
+    
+            with col2:
+                st.write(f"**Type:** {doc['document_type']}")
+                st.write(f"Pages: {doc['start_page']}–{doc['end_page']}")
+    
+            with col3:
+                st.metric("Confidence", f"{doc['confidence']}%")
+    
+            with col4:
+                if doc["review_needed"]:
+                    st.warning("Needs Review")
+                else:
+                    st.success("Auto Approved")
+    
+            with st.expander(f"Review Document {doc['document_number']} Pages"):
+    
+                for page_num in range(doc["start_page"] - 1, doc["end_page"]):
+    
+                    st.write(f"### Page {page_num + 1}")
+    
+                    page = pdf_document[page_num]
+    
+                    pix = page.get_pixmap(
+                        matrix=fitz.Matrix(1.2, 1.2)
+                    )
+    
+                    img_bytes = pix.tobytes("png")
+    
+                    image = Image.open(
+                        io.BytesIO(img_bytes)
+                    )
+    
+                    st.image(
+                        image,
+                        width=250
+                    )
+
     doc_df = pd.DataFrame(documents)
 
     st.dataframe(doc_df, use_container_width=True)
