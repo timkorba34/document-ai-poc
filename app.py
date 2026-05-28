@@ -95,6 +95,9 @@ Rules:
 - Do not hardcode specific document names.
 - Infer document type if possible.
 - Confidence must be 0 to 100.
+- Extract important metadata fields if visible.
+- Metadata should vary based on document type.
+- Return metadata as key/value JSON.
 
 Page Number:
 {page_number}
