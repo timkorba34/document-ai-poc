@@ -13,6 +13,26 @@ client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 # -------------------------
 
 # -------------------------
+# Create Seperated PDF
+# -------------------------
+
+def create_separated_pdf(pdf_document, start_page, end_page):
+
+    output_pdf = fitz.open()
+
+    for page_index in range(start_page - 1, end_page):
+        output_pdf.insert_pdf(
+            pdf_document,
+            from_page=page_index,
+            to_page=page_index
+        )
+
+    pdf_bytes = output_pdf.tobytes()
+    output_pdf.close()
+
+    return pdf_bytes
+
+# -------------------------
 # Clean AI JSON
 # -------------------------
 
@@ -149,6 +169,23 @@ def group_documents(results):
                 current_document["review_needed"] = True
 
     return documents
+
+st.subheader("Download Separated Documents")
+
+for doc in documents:
+
+    pdf_bytes_output = create_separated_pdf(
+        pdf_document,
+        doc["start_page"],
+        doc["end_page"]
+    )
+
+    st.download_button(
+        label=f"Download Document {doc['document_number']} - {doc['document_type']}",
+        data=pdf_bytes_output,
+        file_name=f"Document_{doc['document_number']}_{doc['document_type'].replace(' ', '_')}.pdf",
+        mime="application/pdf"
+    )
 
 # -------------------------
 # Extract Text From Page
