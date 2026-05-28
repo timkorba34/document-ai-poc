@@ -170,23 +170,6 @@ def group_documents(results):
 
     return documents
 
-    st.subheader("Download Separated Documents")
-    
-    for doc in documents:
-    
-        pdf_bytes_output = create_separated_pdf(
-            pdf_document,
-            doc["start_page"],
-            doc["end_page"]
-        )
-    
-        st.download_button(
-            label=f"Download Document {doc['document_number']} - {doc['document_type']}",
-            data=pdf_bytes_output,
-            file_name=f"Document_{doc['document_number']}_{doc['document_type'].replace(' ', '_')}.pdf",
-            mime="application/pdf"
-        )
-
 # -------------------------
 # Extract Text From Page
 # -------------------------
@@ -295,3 +278,21 @@ if uploaded_file:
     doc_df = pd.DataFrame(documents)
 
     st.dataframe(doc_df, use_container_width=True)
+
+    st.subheader("Download Separated Documents")
+
+    for doc in documents:
+
+        pdf_bytes_output = create_separated_pdf(
+            pdf_document,
+            doc["start_page"],
+            doc["end_page"]
+        )
+
+        st.download_button(
+            label=f"Download Document {doc['document_number']} - {doc['document_type']}",
+            data=pdf_bytes_output,
+            file_name=f"Document_{doc['document_number']}_{doc['document_type'].replace(' ', '_')}.pdf",
+            mime="application/pdf",
+            key=f"download_{doc['document_number']}"
+        )
