@@ -276,8 +276,8 @@ if uploaded_file:
     needs_review = int(df["review_needed"].sum())
     auto_approved = total_pages - needs_review
     
-    cols = st.columns(12)
-    
+    col1, col2, col3, col4 = st.columns(4)
+
     col1.metric("Total Pages", total_pages)
     col2.metric("Average Confidence", f"{avg_confidence}%")
     col3.metric("Auto Approved", auto_approved)
@@ -355,7 +355,7 @@ with tab2:
 
     for i, doc in enumerate(approved_docs):
 
-        with cols[i % 4]:
+        with cols[i % 10]:
 
             with st.container(border=True):
 
@@ -386,7 +386,7 @@ with tab3:
 
     for i, doc in enumerate(review_docs):
 
-        with cols[i % 4]:
+        with cols[i % 10]:
 
             with st.container(border=True):
 
