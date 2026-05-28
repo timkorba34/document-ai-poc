@@ -304,6 +304,23 @@ if uploaded_file:
             with st.container(border=True):
     
                 st.write(f"### Document {doc['document_number']}")
+
+                preview_page = pdf_document[doc["start_page"] - 1]
+
+                preview_pix = preview_page.get_pixmap(
+                    matrix=fitz.Matrix(0.8, 0.8)
+                )
+                
+                preview_bytes = preview_pix.tobytes("png")
+                
+                preview_image = Image.open(
+                    io.BytesIO(preview_bytes)
+                )
+                
+                st.image(
+                    preview_image,
+                    width=150
+                )
     
                 st.write(f"Type: {doc['document_type']}")
                 st.write(f"Pages: {doc['start_page']}–{doc['end_page']}")
@@ -321,6 +338,23 @@ if uploaded_file:
             with st.container(border=True):
     
                 st.write(f"### Document {doc['document_number']}")
+
+                preview_page = pdf_document[doc["start_page"] - 1]
+
+                preview_pix = preview_page.get_pixmap(
+                    matrix=fitz.Matrix(0.8, 0.8)
+                )
+                
+                preview_bytes = preview_pix.tobytes("png")
+                
+                preview_image = Image.open(
+                    io.BytesIO(preview_bytes)
+                )
+                
+                st.image(
+                    preview_image,
+                    width=150
+                )
     
                 st.write(f"Type: {doc['document_type']}")
                 st.write(f"Pages: {doc['start_page']}–{doc['end_page']}")
