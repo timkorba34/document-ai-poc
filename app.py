@@ -191,6 +191,23 @@ st.set_page_config(
     layout="wide"
 )
 
+st.markdown("""
+<style>
+
+.block-container {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+[data-testid="stVerticalBlock"] {
+    gap: 0.3rem;
+}
+
+</style>
+""", unsafe_allow_html=True)
+
 st.title("AI Document Segmentation PoC")
 
 st.session_state
@@ -259,7 +276,7 @@ if uploaded_file:
     needs_review = int(df["review_needed"].sum())
     auto_approved = total_pages - needs_review
     
-    col1, col2, col3, col4 = st.columns(4)
+    cols = st.columns(12)
     
     col1.metric("Total Pages", total_pages)
     col2.metric("Average Confidence", f"{avg_confidence}%")
@@ -304,7 +321,7 @@ with tab1:
 
     for i, doc in enumerate(documents):
 
-        with cols[i % 4]:
+        with cols[i % 10]:
 
             with st.container(border=True):
 
