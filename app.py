@@ -300,7 +300,7 @@ with tab1:
 
     st.subheader("Batch Overview")
 
-    cols = st.columns(5)
+    cols = st.columns(8)
 
     for i, doc in enumerate(documents):
 
@@ -334,7 +334,7 @@ with tab2:
 
     st.subheader("Approved Documents")
 
-    cols = st.columns(5)
+    cols = st.columns(8)
 
     for i, doc in enumerate(approved_docs):
 
@@ -365,7 +365,7 @@ with tab3:
 
     st.subheader("Documents Requiring Review")
 
-    cols = st.columns(5)
+    cols = st.columns(8)
 
     for i, doc in enumerate(review_docs):
 
