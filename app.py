@@ -277,58 +277,98 @@ if uploaded_file:
 
     documents = group_documents(results)
 
-    st.subheader("Document Review Dashboard")
-
-    for doc in documents:
+    approved_docs = [
+    doc for doc in documents
+    if not doc["review_needed"]
+    ]
     
+    review_docs = [
+        doc for doc in documents
+        if doc["review_needed"]
+    ]
+    
+    tab1, tab2, tab3 = st.tabs(
+        [
+            "Approved",
+            "Review Needed",
+            "Manual Reorganization"
+        ]
+    )
+
+    with tab1:
+
+    st.subheader("Approved Documents")
+
+    for doc in approved_docs:
+
         with st.container(border=True):
+
+            st.write(f"### Document {doc['document_number']}")
+
+            st.write(f"Type: {doc['document_type']}")
+            st.write(f"Pages: {doc['start_page']}–{doc['end_page']}")
+            st.write(f"Confidence: {doc['confidence']}%")
+
+            st.success("Approved")
+
+
+    with tab2:
     
-            col1, col2, col3, col4 = st.columns(4)
+        st.subheader("Documents Requiring Review")
     
-            with col1:
-                st.metric("Document", doc["document_number"])
+        for doc in review_docs:
     
-            with col2:
-                st.write(f"**Type:** {doc['document_type']}")
+            with st.container(border=True):
+    
+                st.write(f"### Document {doc['document_number']}")
+    
+                st.write(f"Type: {doc['document_type']}")
                 st.write(f"Pages: {doc['start_page']}–{doc['end_page']}")
+                st.write(f"Confidence: {doc['confidence']}%")
     
-            with col3:
-                st.metric("Confidence", f"{doc['confidence']}%")
+                col1, col2, col3 = st.columns(3)
     
-            with col4:
-                if doc["review_needed"]:
-                    st.warning("Needs Review")
-                else:
-                    st.success("Auto Approved")
+                with col1:
     
-            with st.expander(f"Review Document {doc['document_number']} Pages"):
-    
-                for page_num in range(doc["start_page"] - 1, doc["end_page"]):
-    
-                    st.write(f"### Page {page_num + 1}")
-    
-                    page = pdf_document[page_num]
-    
-                    pix = page.get_pixmap(
-                        matrix=fitz.Matrix(1.2, 1.2)
+                    st.button(
+                        f"Approve Doc {doc['document_number']}",
+                        key=f"approve_doc_{doc['document_number']}"
                     )
     
-                    img_bytes = pix.tobytes("png")
+                with col2:
     
-                    image = Image.open(
-                        io.BytesIO(img_bytes)
+                    st.button(
+                        f"Rerun Doc {doc['document_number']}",
+                        key=f"rerun_doc_{doc['document_number']}"
                     )
     
-                    st.image(
-                        image,
-                        width=250
+                with col3:
+    
+                    st.selectbox(
+                        "Move to Document",
+                        [d["document_number"] for d in documents],
+                        key=f"move_doc_{doc['document_number']}"
                     )
-
-    doc_df = pd.DataFrame(documents)
-
-    st.dataframe(doc_df, use_container_width=True)
-
-    st.subheader("Download Separated Documents")
+    
+    
+    with tab3:
+    
+        st.subheader("Manual Page Reorganization")
+    
+        page_to_move = st.number_input(
+            "Page to Move",
+            min_value=1,
+            max_value=total_pages,
+            step=1
+        )
+    
+        target_document = st.selectbox(
+            "Move Page To Document",
+            [doc["document_number"] for doc in documents],
+            key="manual_target_doc"
+        )
+    
+        st.button("Apply Page Move")
 
     for doc in documents:
 
