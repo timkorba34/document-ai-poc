@@ -193,6 +193,11 @@ st.set_page_config(
 
 st.title("AI Document Segmentation PoC")
 
+st.session_state
+
+if "review_actions" not in st.session_state:
+    st.session_state.review_actions = {}
+
 uploaded_file = st.file_uploader(
     "Upload a scanned PDF",
     type=["pdf"]
@@ -271,6 +276,40 @@ if uploaded_file:
             caption=f"Page {page_num + 1}",
             width=300
         )
+
+        # Override Document Type
+        override_doc_type = st.selectbox(
+            "Override Document Type",
+            [
+        "Resume",
+        "Invoice",
+        "Police Report",
+        "Student Record",
+        "Unknown"
+        ],
+    key=f"doctype_{page_num}"
+)
+        
+        # Review Actions
+        col1, col2, col3 = st.columns(3)
+
+        with col1:
+            st.button(
+                f"Approve Page {page_num + 1}",
+                key=f"approve_{page_num}"
+            )
+        
+        with col2:
+            st.button(
+                f"Needs Review {page_num + 1}",
+                key=f"review_{page_num}"
+            )
+        
+        with col3:
+            st.button(
+                f"Force New Document {page_num + 1}",
+                key=f"force_new_{page_num}"
+            )
         
         st.divider()
 
