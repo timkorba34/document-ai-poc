@@ -361,3 +361,18 @@ if uploaded_file:
             mime="application/pdf",
             key=f"download_{doc['document_number']}"
         )
+
+        st.subheader("Reviewer Actions Summary")
+
+        if st.session_state.review_actions:
+            review_df = pd.DataFrame([
+                {
+                    "page": page + 1,
+                    "review_action": action
+                }
+                for page, action in st.session_state.review_actions.items()
+            ])
+        
+            st.dataframe(review_df, use_container_width=True)
+        else:
+            st.info("No reviewer actions recorded yet.")
