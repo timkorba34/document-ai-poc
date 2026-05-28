@@ -11,67 +11,70 @@ import pandas as pd
 # -------------------------
 # Analyze Page
 # -------------------------
-def analyze_page(image, page_number, page_text):
+def analyze_page(image, page_number, page_text, previous_page_text=""):
 
     text = page_text.strip()
+    previous_text = previous_page_text.strip()
+
     lower_text = text.lower()
+    lower_previous = previous_text.lower()
 
     score = 0
+    reasons = []
 
-    # First page is always a new document
     if page_number == 1:
-        score += 100
+        score = 100
+        reasons.append("First page in batch")
 
-    # Shorter first-page style headers
-    if len(text) < 1500:
-        score += 10
-
-    # Has title-like formatting clues
-    first_lines = text.splitlines()[:5]
-    first_block = " ".join(first_lines).lower()
-
-    if len(first_lines) > 0:
-        score += 10
-
-    # Common document-start patterns, not document-specific
-    generic_start_terms = [
-        "date",
-        "name",
-        "id",
-        "number",
-        "account",
-        "case",
-        "invoice",
-        "application",
-        "report",
-        "statement",
-        "form"
-    ]
-
-    for term in generic_start_terms:
-        if term in first_block:
-            score += 5
-
-    # Continuation indicators reduce score
-    continuation_terms = [
-        "continued",
-        "page 2",
-        "page 3",
-        "page 4",
-        "continued on next page"
-    ]
-
-    for term in continuation_terms:
-        if term in lower_text:
-            score -= 30
-
-    # Very little text usually needs review
-    if len(text) < 50:
-        confidence = 60
     else:
-        confidence = min(max(score, 0), 100)
+        current_first_lines = text.splitlines()[:6]
+        previous_first_lines = previous_text.splitlines()[:6]
 
-    is_new_document = confidence >= 70
+        current_start = " ".join(current_first_lines).lower()
+        previous_start = " ".join(previous_first_lines).lower()
+
+        # New title/header on current page
+        if len(current_first_lines) > 0 and len(current_first_lines[0]) < 80:
+            score += 20
+            reasons.append("Possible title/header at top of page")
+
+        # Current page has structured identifiers near top
+        generic_identifiers = [
+            "name", "date", "id", "number", "account", "case",
+            "vendor", "employee", "student", "department"
+        ]
+
+        for term in generic_identifiers:
+            if term in current_start:
+                score += 6
+                reasons.append(f"Identifier near top: {term}")
+
+        # Current page looks different from prior page
+        shared_words = set(lower_text.split()) & set(lower_previous.split())
+        current_words = set(lower_text.split())
+
+        if current_words:
+            overlap_ratio = len(shared_words) / len(current_words)
+        else:
+            overlap_ratio = 0
+
+        if overlap_ratio < 0.25:
+            score += 25
+            reasons.append("Low text similarity to previous page")
+
+        # Continuation signals reduce score
+        continuation_terms = [
+            "continued", "page 2", "page 3", "page 4",
+            "continued on next page", "signature continued"
+        ]
+
+        for term in continuation_terms:
+            if term in lower_text:
+                score -= 35
+                reasons.append(f"Continuation signal: {term}")
+
+    confidence = max(0, min(score, 100))
+    is_new_document = confidence >= 55
 
     return {
         "page": page_number,
@@ -79,8 +82,10 @@ def analyze_page(image, page_number, page_text):
         "document_type": "Unknown",
         "confidence": confidence,
         "review_needed": confidence < 90,
+        "reason": "; ".join(reasons),
         "text_preview": page_text[:150]
     }
+    
 # -------------------------
 # Group Documents
 # -------------------------
