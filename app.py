@@ -164,7 +164,9 @@ if uploaded_file:
     
     doc_df = pd.DataFrame(documents)
     
-    st.dataframe(doc_df, use_container_width=True)
+    st.dataframe(doc_df, use_container_width=True
+
+    previous_page_text = ""
 
     for page_num in range(total_pages):
 
