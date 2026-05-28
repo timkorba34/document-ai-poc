@@ -68,21 +68,22 @@ Current Page Text:
                 "content": prompt
             }
         ],
-        temperature=0
+        temperature=0,
+        response_format={"type": "json_object"}
     )
 
     content = response.choices[0].message.content
 
     try:
-        ai_result = json.loads(content)
-    except Exception:
-        ai_result = {
-            "is_new_document": False,
-            "document_type": "Unknown",
-            "confidence": 0,
-            "review_needed": True,
-            "reason": "AI response could not be parsed"
-        }
+        ai_result = clean_ai_json(content)
+    except Exception as e:
+    ai_result = {
+        "is_new_document": False,
+        "document_type": "Unknown",
+        "confidence": 0,
+        "review_needed": True,
+        "reason": f"AI response could not be parsed: {str(e)} | Raw: {content[:300]}"
+    }
 
     return {
         "page": page_number,
