@@ -1,4 +1,5 @@
 import streamlit as st
+import fitz
 
 st.set_page_config(page_title="Document AI PoC")
 
@@ -10,7 +11,16 @@ uploaded_file = st.file_uploader(
 )
 
 if uploaded_file:
-    st.success("PDF uploaded successfully")
-    
-    st.write("Filename:", uploaded_file.name)
-    st.write("File Size:", uploaded_file.size, "bytes")
+
+    pdf_bytes = uploaded_file.read()
+
+    pdf_document = fitz.open(
+        stream=pdf_bytes,
+        filetype="pdf"
+    )
+
+    total_pages = len(pdf_document)
+
+    st.success(
+        f"PDF loaded successfully ({total_pages} pages)"
+    )
