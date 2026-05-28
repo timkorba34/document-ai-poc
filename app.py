@@ -11,35 +11,52 @@ import pandas as pd
 # -------------------------
 # Analyze Page
 # -------------------------
-def analyze_page(image, page_number):
+def analyze_page(image, page_number, page_text):
+
+    text = page_text.lower()
 
     if page_number == 1:
-        return {
-            "page": page_number,
-            "is_new_document": True,
-            "document_type": "Employee File",
-            "confidence": 98,
-            "review_needed": False
-        }
-
-    elif page_number % 3 == 0:
-        return {
-            "page": page_number,
-            "is_new_document": True,
-            "document_type": "Resume",
-            "confidence": 91,
-            "review_needed": False
-        }
-
+        is_new = True
+    elif "resume" in text:
+        is_new = True
+    elif "employment application" in text:
+        is_new = True
+    elif "invoice" in text:
+        is_new = True
+    elif "case report" in text:
+        is_new = True
+    elif "student record" in text:
+        is_new = True
     else:
-        return {
-            "page": page_number,
-            "is_new_document": False,
-            "document_type": "Continuation Page",
-            "confidence": 84,
-            "review_needed": True
-        }
+        is_new = False
 
+    if "invoice" in text:
+        doc_type = "Vendor Invoice"
+        confidence = 95
+    elif "resume" in text:
+        doc_type = "Resume"
+        confidence = 94
+    elif "employment application" in text:
+        doc_type = "Employment Application"
+        confidence = 93
+    elif "case report" in text:
+        doc_type = "Police Case Report"
+        confidence = 92
+    elif "student record" in text:
+        doc_type = "Student Record"
+        confidence = 91
+    else:
+        doc_type = "Continuation Page"
+        confidence = 82
+
+    return {
+        "page": page_number,
+        "is_new_document": is_new,
+        "document_type": doc_type,
+        "confidence": confidence,
+        "review_needed": confidence < 90,
+        "text_preview": page_text[:150]
+    }
 # -------------------------
 # Group Documents
 # -------------------------
@@ -69,6 +86,13 @@ def group_documents(results):
                 current_document["review_needed"] = True
 
     return documents
+
+# -------------------------
+# Extract Text From Page
+# -------------------------
+def extract_text_from_page(page):
+    text = page.get_text("text")
+    return text.strip()
 
 # -------------------------
 # STREAMLIT UI
@@ -127,11 +151,16 @@ if uploaded_file:
             io.BytesIO(img_bytes)
         )
     
+        # OCR TEXT EXTRACTION
+        page_text = extract_text_from_page(page)
+    
+        # AI ANALYSIS
         result = analyze_page(
             image,
-            page_num + 1
+            page_num + 1,
+            page_text
         )
-
+    
         results.append(result)
     
         st.image(
