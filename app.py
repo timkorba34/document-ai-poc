@@ -321,7 +321,7 @@ with tab1:
 
     for i, doc in enumerate(documents):
 
-        with cols[i % 10]:
+        with cols[i % 8]:
 
             with st.container(border=True):
 
@@ -355,7 +355,7 @@ with tab2:
 
     for i, doc in enumerate(approved_docs):
 
-        with cols[i % 10]:
+        with cols[i % 8]:
 
             with st.container(border=True):
 
@@ -386,7 +386,7 @@ with tab3:
 
     for i, doc in enumerate(review_docs):
 
-        with cols[i % 10]:
+        with cols[i % 8]:
 
             with st.container(border=True):
 
