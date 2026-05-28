@@ -85,7 +85,8 @@ Schema:
   "document_type": "Unknown",
   "confidence": 0,
   "review_needed": true,
-  "reason": "Brief explanation"
+  "reason": "Brief explanation",
+  "metadata": {{}}
 }}
 
 Rules:
