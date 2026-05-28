@@ -228,6 +228,11 @@ if uploaded_file:
 
         st.write(result)
 
+        st.button(
+            "TEST BUTTON",
+            key=f"test_{page_num}"
+        )
+
         if st.button(
             f"Rerun AI - Page {page_num + 1}",
             key=f"rerun_{page_num}"
