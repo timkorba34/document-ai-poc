@@ -77,13 +77,13 @@ Current Page Text:
     try:
         ai_result = clean_ai_json(content)
     except Exception as e:
-    ai_result = {
-        "is_new_document": False,
-        "document_type": "Unknown",
-        "confidence": 0,
-        "review_needed": True,
-        "reason": f"AI response could not be parsed: {str(e)} | Raw: {content[:300]}"
-    }
+        ai_result = {
+            "is_new_document": False,
+            "document_type": "Unknown",
+            "confidence": 0,
+            "review_needed": True,
+            "reason": f"AI response could not be parsed: {str(e)} | Raw: {content[:300]}"
+        }
 
     return {
         "page": page_number,
