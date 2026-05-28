@@ -2,6 +2,7 @@ import streamlit as st
 import fitz
 from PIL import Image
 import io
+import pandas as pd
 
 # -------------------------
 # FUNCTIONS
@@ -75,6 +76,8 @@ if uploaded_file:
     )
 
     st.subheader("Page Previews")
+
+    results = []
 
     for page_num in range(total_pages):
 
