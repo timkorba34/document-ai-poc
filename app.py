@@ -220,28 +220,30 @@ if uploaded_file:
 
         previous_page_text = page_text
 
-        st.image(
-            image,
-            caption=f"Page {page_num + 1}",
-            width=350
-        )
-
         st.write(result)
 
         if st.button(
             f"Rerun AI - Page {page_num + 1}",
             key=f"rerun_{page_num}"
         ):
-
+        
             rerun_result = analyze_page(
                 image,
                 page_num + 1,
-                page_text,                    
+                page_text,
                 previous_page_text
             )
-    
+        
             st.write("Rerun Result:")
             st.write(rerun_result)
+        
+        st.image(
+            image,
+            caption=f"Page {page_num + 1}",
+            width=300
+        )
+        
+        st.divider()
 
     st.subheader("AI Segmentation Results")
 
