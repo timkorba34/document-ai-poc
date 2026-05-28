@@ -97,6 +97,8 @@ if uploaded_file:
             image,
             page_num + 1
         )
+
+        results.append(result)
     
         st.image(
             image,
