@@ -141,6 +141,7 @@ Current Page Text:
         "confidence": ai_result.get("confidence", 0),
         "review_needed": ai_result.get("review_needed", True),
         "reason": ai_result.get("reason", ""),
+        "metadata": ai_result.get("metadata", {}),
         "text_preview": page_text[:150]
     }
     
