@@ -3,6 +3,10 @@ import fitz
 from PIL import Image
 import io
 import pandas as pd
+from openai import OpenAI
+import json
+
+client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
 # -------------------------
 # FUNCTIONS
