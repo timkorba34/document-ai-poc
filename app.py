@@ -218,7 +218,7 @@ if uploaded_file:
         f"PDF loaded successfully ({total_pages} pages)"
     )
 
-    st.subheader("Page Previews")
+    st.subheader("Processing Pages")
 
     results = []
     previous_page_text = ""
@@ -226,92 +226,29 @@ if uploaded_file:
     for page_num in range(total_pages):
 
         page = pdf_document[page_num]
-
+    
         pix = page.get_pixmap(
             matrix=fitz.Matrix(1.5, 1.5)
         )
-
+    
         img_bytes = pix.tobytes("png")
-
+    
         image = Image.open(
             io.BytesIO(img_bytes)
         )
-
+    
         page_text = extract_text_from_page(page)
-
+    
         result = analyze_page(
             image,
             page_num + 1,
             page_text,
             previous_page_text
         )
-
+    
         results.append(result)
-
+    
         previous_page_text = page_text
-
-        st.write(result)
-
-        if result.get("metadata"):
-            st.subheader("Extracted Metadata")
-            st.json(result["metadata"])
-
-        if st.button(
-            f"Rerun AI - Page {page_num + 1}",
-            key=f"rerun_{page_num}"
-        ):
-        
-            rerun_result = analyze_page(
-                image,
-                page_num + 1,
-                page_text,
-                previous_page_text
-            )
-        
-            st.write("Rerun Result:")
-            st.write(rerun_result)
-        
-        st.image(
-            image,
-            caption=f"Page {page_num + 1}",
-            width=300
-        )
-
-        # Override Document Type
-        override_doc_type = st.selectbox(
-            "Override Document Type",
-            [
-        "Resume",
-        "Invoice",
-        "Police Report",
-        "Student Record",
-        "Unknown"
-        ],
-    key=f"doctype_{page_num}"
-)
-        
-        # Review Actions
-        col1, col2, col3 = st.columns(3)
-
-        with col1:
-            st.button(
-                f"Approve Page {page_num + 1}",
-                key=f"approve_{page_num}"
-            )
-        
-        with col2:
-            st.button(
-                f"Needs Review {page_num + 1}",
-                key=f"review_{page_num}"
-            )
-        
-        with col3:
-            st.button(
-                f"Force New Document {page_num + 1}",
-                key=f"force_new_{page_num}"
-            )
-        
-        st.divider()
 
     st.subheader("AI Segmentation Results")
 
