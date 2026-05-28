@@ -17,76 +17,80 @@ client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 # -------------------------
 def analyze_page(image, page_number, page_text, previous_page_text=""):
 
-    text = page_text.strip()
-    previous_text = previous_page_text.strip()
+    prompt = f"""
+You are analyzing scanned business documents for document segmentation.
 
-    lower_text = text.lower()
-    lower_previous = previous_text.lower()
+Your job:
+Determine whether the current page starts a new document or continues the previous document.
 
-    score = 0
-    reasons = []
+Use:
+- current page text
+- previous page text
+- document structure
+- headers/titles
+- changes in topic
+- form layout clues
+- page continuation clues
 
-    if page_number == 1:
-        score = 100
-        reasons.append("First page in batch")
+Return JSON only.
 
-    else:
-        current_first_lines = text.splitlines()[:6]
-        previous_first_lines = previous_text.splitlines()[:6]
+Schema:
+{{
+  "is_new_document": true,
+  "document_type": "Unknown",
+  "confidence": 0,
+  "review_needed": true,
+  "reason": "Brief explanation"
+}}
 
-        current_start = " ".join(current_first_lines).lower()
-        previous_start = " ".join(previous_first_lines).lower()
+Rules:
+- Page 1 is always a new document.
+- If unsure, set confidence below 90 and review_needed true.
+- Do not hardcode specific document names.
+- Infer document type if possible.
+- Confidence must be 0 to 100.
 
-        # New title/header on current page
-        if len(current_first_lines) > 0 and len(current_first_lines[0]) < 80:
-            score += 20
-            reasons.append("Possible title/header at top of page")
+Page Number:
+{page_number}
 
-        # Current page has structured identifiers near top
-        generic_identifiers = [
-            "name", "date", "id", "number", "account", "case",
-            "vendor", "employee", "student", "department"
-        ]
+Previous Page Text:
+{previous_page_text[:2500]}
 
-        for term in generic_identifiers:
-            if term in current_start:
-                score += 6
-                reasons.append(f"Identifier near top: {term}")
+Current Page Text:
+{page_text[:3500]}
+"""
 
-        # Current page looks different from prior page
-        shared_words = set(lower_text.split()) & set(lower_previous.split())
-        current_words = set(lower_text.split())
+    response = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[
+            {
+                "role": "user",
+                "content": prompt
+            }
+        ],
+        temperature=0
+    )
 
-        if current_words:
-            overlap_ratio = len(shared_words) / len(current_words)
-        else:
-            overlap_ratio = 0
+    content = response.choices[0].message.content
 
-        if overlap_ratio < 0.25:
-            score += 25
-            reasons.append("Low text similarity to previous page")
-
-        # Continuation signals reduce score
-        continuation_terms = [
-            "continued", "page 2", "page 3", "page 4",
-            "continued on next page", "signature continued"
-        ]
-
-        for term in continuation_terms:
-            if term in lower_text:
-                score -= 35
-                reasons.append(f"Continuation signal: {term}")
-
-    confidence = max(0, min(score, 100))
-    is_new_document = confidence >= 55
+    try:
+        ai_result = json.loads(content)
+    except Exception:
+        ai_result = {
+            "is_new_document": False,
+            "document_type": "Unknown",
+            "confidence": 0,
+            "review_needed": True,
+            "reason": "AI response could not be parsed"
+        }
 
     return {
         "page": page_number,
-        "is_new_document": is_new_document,
-        "document_type": "Unknown",
-        "confidence": confidence,
-        "review_needed": confidence < 90,
-        "reason": "; ".join(reasons),
+        "is_new_document": ai_result.get("is_new_document", False),
+        "document_type": ai_result.get("document_type", "Unknown"),
+        "confidence": ai_result.get("confidence", 0),
+        "review_needed": ai_result.get("review_needed", True),
+        "reason": ai_result.get("reason", ""),
         "text_preview": page_text[:150]
     }
     
