@@ -242,8 +242,6 @@ if uploaded_file:
     
             st.write("Rerun Result:")
             st.write(rerun_result)
-                
-    st.write(rerun_result)
 
     st.subheader("AI Segmentation Results")
 
