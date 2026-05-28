@@ -317,12 +317,12 @@ with tab1:
 
                 st.image(
                     preview_image,
-                    use_container_width=True
+                    width=80
                 )
                 
-                st.markdown(f"**{doc['document_type']}**")
-                st.caption(f"Pages {doc['start_page']}–{doc['end_page']}")
-                st.caption(f"Confidence: {doc['confidence']}%")
+                st.caption(f"Doc {doc['document_number']}")
+                st.caption(f"{doc['document_type']}")
+                st.caption(f"{doc['confidence']}%")
 
                 if doc["review_needed"]:
                     st.warning("Needs Review")
@@ -351,12 +351,12 @@ with tab2:
 
                 st.image(
                     preview_image,
-                    use_container_width=True
+                    width=80
                 )
                 
-                st.markdown(f"**{doc['document_type']}**")
-                st.caption(f"Pages {doc['start_page']}–{doc['end_page']}")
-                st.caption(f"Confidence: {doc['confidence']}%")
+                st.caption(f"Doc {doc['document_number']}")
+                st.caption(f"{doc['document_type']}")
+                st.caption(f"{doc['confidence']}%")
 
                 st.success("Approved")
 
@@ -382,12 +382,12 @@ with tab3:
 
                 st.image(
                     preview_image,
-                    use_container_width=True
+                    width=80
                 )
                 
-                st.markdown(f"**{doc['document_type']}**")
-                st.caption(f"Pages {doc['start_page']}–{doc['end_page']}")
-                st.caption(f"Confidence: {doc['confidence']}%")
+                st.caption(f"Doc {doc['document_number']}")
+                st.caption(f"{doc['document_type']}")
+                st.caption(f"{doc['confidence']}%")
 
                 st.warning("Needs Review")
 
