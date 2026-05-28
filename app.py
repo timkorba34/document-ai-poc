@@ -13,46 +13,70 @@ import pandas as pd
 # -------------------------
 def analyze_page(image, page_number, page_text):
 
-    text = page_text.lower()
+    text = page_text.strip()
+    lower_text = text.lower()
 
+    score = 0
+
+    # First page is always a new document
     if page_number == 1:
-        is_new = True
-    elif "resume" in text:
-        is_new = True
-    elif "employment application" in text:
-        is_new = True
-    elif "invoice" in text:
-        is_new = True
-    elif "case report" in text:
-        is_new = True
-    elif "student record" in text:
-        is_new = True
-    else:
-        is_new = False
+        score += 100
 
-    if "invoice" in text:
-        doc_type = "Vendor Invoice"
-        confidence = 95
-    elif "resume" in text:
-        doc_type = "Resume"
-        confidence = 94
-    elif "employment application" in text:
-        doc_type = "Employment Application"
-        confidence = 93
-    elif "case report" in text:
-        doc_type = "Police Case Report"
-        confidence = 92
-    elif "student record" in text:
-        doc_type = "Student Record"
-        confidence = 91
+    # Shorter first-page style headers
+    if len(text) < 1500:
+        score += 10
+
+    # Has title-like formatting clues
+    first_lines = text.splitlines()[:5]
+    first_block = " ".join(first_lines).lower()
+
+    if len(first_lines) > 0:
+        score += 10
+
+    # Common document-start patterns, not document-specific
+    generic_start_terms = [
+        "date",
+        "name",
+        "id",
+        "number",
+        "account",
+        "case",
+        "invoice",
+        "application",
+        "report",
+        "statement",
+        "form"
+    ]
+
+    for term in generic_start_terms:
+        if term in first_block:
+            score += 5
+
+    # Continuation indicators reduce score
+    continuation_terms = [
+        "continued",
+        "page 2",
+        "page 3",
+        "page 4",
+        "continued on next page"
+    ]
+
+    for term in continuation_terms:
+        if term in lower_text:
+            score -= 30
+
+    # Very little text usually needs review
+    if len(text) < 50:
+        confidence = 60
     else:
-        doc_type = "Continuation Page"
-        confidence = 82
+        confidence = min(max(score, 0), 100)
+
+    is_new_document = confidence >= 70
 
     return {
         "page": page_number,
-        "is_new_document": is_new,
-        "document_type": doc_type,
+        "is_new_document": is_new_document,
+        "document_type": "Unknown",
         "confidence": confidence,
         "review_needed": confidence < 90,
         "text_preview": page_text[:150]
