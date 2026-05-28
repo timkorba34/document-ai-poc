@@ -105,6 +105,14 @@ if uploaded_file:
 
     results = []
 
+    st.subheader("Grouped Documents")
+
+    documents = group_documents(results)
+    
+    doc_df = pd.DataFrame(documents)
+    
+    st.dataframe(doc_df, use_container_width=True)
+
     for page_num in range(total_pages):
 
         page = pdf_document[page_num]
