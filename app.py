@@ -300,7 +300,7 @@ with tab1:
 
     st.subheader("Batch Overview")
 
-    cols = st.columns(4)
+    cols = st.columns(5)
 
     for i, doc in enumerate(documents):
 
@@ -315,9 +315,12 @@ with tab1:
                 preview_bytes = preview_pix.tobytes("png")
                 preview_image = Image.open(io.BytesIO(preview_bytes))
 
-                st.image(preview_image, width=120)
-
-                st.caption(f"{doc['document_type']}")
+                st.image(
+                    preview_image,
+                    use_container_width=True
+                )
+                
+                st.markdown(f"**{doc['document_type']}**")
                 st.caption(f"Pages {doc['start_page']}–{doc['end_page']}")
                 st.caption(f"Confidence: {doc['confidence']}%")
 
@@ -331,7 +334,7 @@ with tab2:
 
     st.subheader("Approved Documents")
 
-    cols = st.columns(4)
+    cols = st.columns(5)
 
     for i, doc in enumerate(approved_docs):
 
@@ -346,9 +349,12 @@ with tab2:
                 preview_bytes = preview_pix.tobytes("png")
                 preview_image = Image.open(io.BytesIO(preview_bytes))
 
-                st.image(preview_image, width=120)
-
-                st.caption(f"{doc['document_type']}")
+                st.image(
+                    preview_image,
+                    use_container_width=True
+                )
+                
+                st.markdown(f"**{doc['document_type']}**")
                 st.caption(f"Pages {doc['start_page']}–{doc['end_page']}")
                 st.caption(f"Confidence: {doc['confidence']}%")
 
@@ -359,7 +365,7 @@ with tab3:
 
     st.subheader("Documents Requiring Review")
 
-    cols = st.columns(4)
+    cols = st.columns(5)
 
     for i, doc in enumerate(review_docs):
 
@@ -374,9 +380,12 @@ with tab3:
                 preview_bytes = preview_pix.tobytes("png")
                 preview_image = Image.open(io.BytesIO(preview_bytes))
 
-                st.image(preview_image, width=120)
-
-                st.caption(f"{doc['document_type']}")
+                st.image(
+                    preview_image,
+                    use_container_width=True
+                )
+                
+                st.markdown(f"**{doc['document_type']}**")
                 st.caption(f"Pages {doc['start_page']}–{doc['end_page']}")
                 st.caption(f"Confidence: {doc['confidence']}%")
 
