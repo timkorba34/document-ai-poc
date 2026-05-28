@@ -13,6 +13,31 @@ client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 # -------------------------
 
 # -------------------------
+# Clean AI JSON
+# -------------------------
+
+def clean_ai_json(content):
+
+    content = content.strip()
+
+    if content.startswith("```json"):
+        content = content.replace(
+            "```json",
+            ""
+        ).replace(
+            "```",
+            ""
+        ).strip()
+
+    elif content.startswith("```"):
+        content = content.replace(
+            "```",
+            ""
+        ).strip()
+
+    return json.loads(content)
+
+# -------------------------
 # Analyze Page
 # -------------------------
 def analyze_page(image, page_number, page_text, previous_page_text=""):
