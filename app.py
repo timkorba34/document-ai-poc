@@ -3,6 +3,26 @@ import fitz
 from PIL import Image
 import io
 
+# -------------------------
+# FUNCTIONS
+# -------------------------
+
+# -------------------------
+# Analyze Page
+# -------------------------
+def analyze_page(image, page_number):
+    return {
+        "page": page_number,
+        "is_new_document": False,
+        "document_type": "Unknown",
+        "confidence": 0,
+        "review_needed": True
+    }
+
+# -------------------------
+# STREAMLIT UI
+# -------------------------
+
 st.set_page_config(page_title="Document AI PoC", layout="wide")
 
 st.title("AI Document Segmentation PoC")
