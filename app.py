@@ -594,7 +594,7 @@ with main_tab:
                     expanded=False
                 )
 
-            if st.session_state.analysis_results is not None:
+        if st.session_state.analysis_results is not None:
 
                 results = st.session_state.analysis_results
                 pdf_bytes = st.session_state.pdf_bytes
