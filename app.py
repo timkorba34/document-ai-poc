@@ -258,22 +258,21 @@ st.markdown("""
 
 st.title("AI Document Segmentation PoC")
 
-main_tab, config_tab = st.tabs(
-    [
-        "Document Processing",
-        "Configuration Management"
-    ]
-)
-
-with main_tab:
+# -------------------------
+# SESSION STATE
+# -------------------------
 
 if "review_actions" not in st.session_state:
     st.session_state.review_actions = {}
 
 if "customer_configs" not in st.session_state:
+
     st.session_state.customer_configs = {
+
         "ViaTRON Demo": {
+
             "customer_name": "ViaTRON Demo",
+
             "document_types": [
                 "Resume",
                 "Employment Application",
@@ -281,18 +280,15 @@ if "customer_configs" not in st.session_state:
                 "Police Case Report",
                 "Student Record"
             ],
+
             "confidence_threshold": 90,
+
             "metadata_fields": {
                 "Vendor Invoice": [
                     "invoice_number",
                     "vendor_name",
                     "invoice_date",
                     "amount"
-                ],
-                "Student Record": [
-                    "student_id",
-                    "student_name",
-                    "enrollment_date"
                 ]
             }
         }
@@ -307,92 +303,120 @@ if "view_mode" not in st.session_state:
 if "selected_doc" not in st.session_state:
     st.session_state.selected_doc = None
 
-with config_tab 
-    st.subheader("Customer / Project Configuration")
-    
+# -------------------------
+# TABS
+# -------------------------
+
+main_tab, config_tab = st.tabs(
+    [
+        "📄 Document Processing",
+        "⚙️ Configuration Management"
+    ]
+)
+
+# ==================================================
+# CONFIGURATION TAB
+# ==================================================
+
+with config_tab:
+
+    st.subheader("Customer Configuration")
+
     config_mode = st.radio(
         "Configuration Mode",
-        ["Use Existing Configuration", "Create New Configuration"],
+        [
+            "Use Existing Configuration",
+            "Create New Configuration"
+        ],
         horizontal=True
     )
 
-if config_mode == "Use Existing Configuration":
+    if config_mode == "Use Existing Configuration":
 
-    selected_config_name = st.selectbox(
-        "Select Configuration",
-        list(st.session_state.customer_configs.keys())
-    )
-
-    st.session_state.selected_config_name = selected_config_name
-
-else:
-
-    new_customer_name = st.text_input(
-        "Customer / Project Name",
-        "New Customer"
-    )
-
-    new_document_types_input = st.text_area(
-        "Expected Document Types",
-        "Invoice\nPurchase Order\nContract\nApplication\nReport"
-    )
-
-    new_confidence_threshold = st.slider(
-        "Confidence Threshold",
-        50,
-        100,
-        90
-    )
-
-    new_metadata_fields_input = st.text_area(
-        "Metadata Fields by Document Type",
-        "Invoice: invoice_number, vendor_name, invoice_date, amount\nPurchase Order: po_number, vendor_name, order_date, amount"
-    )
-
-    if st.button("Save Configuration"):
-
-        document_types = [
-            doc.strip()
-            for doc in new_document_types_input.splitlines()
-            if doc.strip()
-        ]
-
-        metadata_fields = {}
-
-        for line in new_metadata_fields_input.splitlines():
-            if ":" in line:
-                doc_type, fields = line.split(":", 1)
-
-                metadata_fields[doc_type.strip()] = [
-                    field.strip()
-                    for field in fields.split(",")
-                    if field.strip()
-                ]
-
-        st.session_state.customer_configs[new_customer_name] = {
-            "customer_name": new_customer_name,
-            "document_types": document_types,
-            "confidence_threshold": new_confidence_threshold,
-            "metadata_fields": metadata_fields
-        }
-
-        st.session_state.selected_config_name = new_customer_name
-
-        st.success(
-            f"Configuration saved for {new_customer_name}"
+        selected_config_name = st.selectbox(
+            "Select Configuration",
+            list(st.session_state.customer_configs.keys())
         )
 
-active_config = st.session_state.customer_configs[
-    st.session_state.selected_config_name
-]
+        st.session_state.selected_config_name = (
+            selected_config_name
+        )
 
-with st.expander("Active Configuration Details"):
-    st.json(active_config)
+    else:
 
-uploaded_file = st.file_uploader(
-    f"Upload PDF Batch for {active_config['customer_name']}",
-    type=["pdf"]
-)
+        new_customer_name = st.text_input(
+            "Customer / Project Name"
+        )
+
+        new_document_types = st.text_area(
+            "Document Types",
+            "Invoice\nPurchase Order\nContract"
+        )
+
+        new_threshold = st.slider(
+            "Confidence Threshold",
+            50,
+            100,
+            90
+        )
+
+        if st.button("Save Configuration"):
+
+            st.session_state.customer_configs[
+                new_customer_name
+            ] = {
+
+                "customer_name": new_customer_name,
+
+                "document_types": [
+                    x.strip()
+                    for x in new_document_types.splitlines()
+                    if x.strip()
+                ],
+
+                "confidence_threshold": new_threshold,
+
+                "metadata_fields": {}
+            }
+
+            st.session_state.selected_config_name = (
+                new_customer_name
+            )
+
+            st.success(
+                f"{new_customer_name} saved."
+            )
+
+    st.divider()
+
+    st.subheader("Configuration Details")
+
+    st.json(
+        st.session_state.customer_configs[
+            st.session_state.selected_config_name
+        ]
+    )
+
+# ==================================================
+# DOCUMENT PROCESSING TAB
+# ==================================================
+
+with main_tab:
+
+    active_config = (
+        st.session_state.customer_configs[
+            st.session_state.selected_config_name
+        ]
+    )
+
+    st.subheader(
+        f"Active Configuration: {active_config['customer_name']}"
+    )
+
+    uploaded_file = st.file_uploader(
+        "Upload PDF Batch",
+        type=["pdf"]
+    )
 
 if uploaded_file:
 
