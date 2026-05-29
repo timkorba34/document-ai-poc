@@ -293,14 +293,14 @@ if uploaded_file:
 
     documents = group_documents(results)
 
-    if "selected_doc" not in st.session_state:
-        st.session_state.selected_doc = 1
+        if "selected_doc" not in st.session_state:
+            st.session_state.selected_doc = documents[0]["document_number"]
     
         approved_docs = [
-            doc for doc in documents        
+            doc for doc in documents
             if not doc["review_needed"]
         ]
-            
+    
         review_docs = [
             doc for doc in documents
             if doc["review_needed"]
@@ -317,7 +317,7 @@ if uploaded_file:
     if "selected_doc" not in st.session_state:
         st.session_state.selected_doc = documents[0]["document_number"]
 
-    lleft_col, right_col = st.columns([0.8, 3.2])
+        left_col, right_col = st.columns([0.8, 3.2])
 
     with left_col:
 
