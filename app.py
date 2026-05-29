@@ -422,12 +422,26 @@ with main_tab:
         type=["pdf"]
     )
     
-    run_processing = st.button(
-        "🚀 Run Analysis",
-        type="primary"
-    )
+    if uploaded_file:
+
+        st.info(
+            f"""
+    Configuration: {active_config['customer_name']}
     
-    if uploaded_file and run_processing:
+    Document Types:
+    {len(active_config['document_types'])}
+    
+    Confidence Threshold:
+    {active_config['confidence_threshold']}%
+            """
+        )
+    
+        run_processing = st.button(
+            "🚀 Run Analysis",
+            type="primary"
+        )
+
+    if run_processing:
     
         pdf_bytes = uploaded_file.read()
     
