@@ -294,24 +294,24 @@ if uploaded_file:
 
     documents = group_documents(results)
 
-        approved_docs = [
-        doc for doc in documents
+    approved_docs = [
+        doc for doc in documents        
         if not doc["review_needed"]
         ]
         
-        review_docs = [
-            doc for doc in documents
-            if doc["review_needed"]
+    review_docs = [
+        doc for doc in documents
+        if doc["review_needed"]
         ]
         
-        tab1, tab2, tab3, tab4 = st.tabs(
-            [
-                "Batch Overview",
-                "Approved",
-                "Review Needed",
-                "Manual Reorganization"
-            ]
-        )
+    tab1, tab2, tab3, tab4 = st.tabs(
+        [
+            "Batch Overview",
+            "Approved",
+            "Review Needed",
+            "Manual Reorganization"
+        ]
+    )
 
 with tab1:
 
