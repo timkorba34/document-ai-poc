@@ -6,6 +6,46 @@ import pandas as pd
 from openai import OpenAI
 import json
 
+@st.cache_data(show_spinner=False)
+def process_pdf_cached(pdf_bytes):
+
+    pdf_document = fitz.open(
+        stream=pdf_bytes,
+        filetype="pdf"
+    )
+
+    results = []
+    previous_page_text = ""
+
+    for page_num in range(len(pdf_document)):
+
+        page = pdf_document[page_num]
+
+        pix = page.get_pixmap(
+            matrix=fitz.Matrix(1.5, 1.5)
+        )
+
+        img_bytes = pix.tobytes("png")
+
+        image = Image.open(
+            io.BytesIO(img_bytes)
+        )
+
+        page_text = extract_text_from_page(page)
+
+        result = analyze_page(
+            image,
+            page_num + 1,
+            page_text,
+            previous_page_text
+        )
+
+        results.append(result)
+
+        previous_page_text = page_text
+
+    return results
+
 client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
 # -------------------------
@@ -234,6 +274,8 @@ if uploaded_file:
     )
 
     total_pages = len(pdf_document)
+
+    results = process_pdf_cached(pdf_bytes)
 
     st.success(
         f"PDF loaded successfully ({total_pages} pages)"
