@@ -793,7 +793,7 @@ with main_tab:
                     ):
             
                         with page_cols[
-                            page_num % 6
+                            page_num % 2
                         ]:
             
                             page = pdf_document[page_num]
