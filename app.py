@@ -321,10 +321,10 @@ main_tab, config_tab = st.tabs(
 
 with config_tab:
 
-    st.subheader("Customer Configuration")
+    st.subheader("Customer Setup")
 
-    config_mode = st.radio(
-        "Configuration Mode",
+    config_action = st.radio(
+        "What do you want to do?",
         [
             "Use Existing Configuration",
             "Create New Configuration"
@@ -332,71 +332,141 @@ with config_tab:
         horizontal=True
     )
 
-    if config_mode == "Use Existing Configuration":
+    if config_action == "Use Existing Configuration":
 
         selected_config_name = st.selectbox(
-            "Select Configuration",
+            "Select Customer Configuration",
             list(st.session_state.customer_configs.keys())
         )
 
-        st.session_state.selected_config_name = (
+        st.session_state.selected_config_name = selected_config_name
+
+        active_preview_config = st.session_state.customer_configs[
             selected_config_name
+        ]
+
+        st.success(
+            f"Using configuration: {active_preview_config['customer_name']}"
         )
+
+        with st.expander("View Configuration Details"):
+            st.json(active_preview_config)
 
     else:
 
-        new_customer_name = st.text_input(
-            "Customer / Project Name"
+        st.markdown("### Create Customer Configuration")
+
+        customer_name = st.text_input(
+            "Customer / Project Name",
+            placeholder="Example: ABC Manufacturing"
         )
 
-        new_document_types = st.text_area(
+        industry = st.selectbox(
+            "Industry",
+            [
+                "Manufacturing",
+                "Healthcare",
+                "Insurance",
+                "Banking / Financial Services",
+                "Legal",
+                "Government",
+                "Education",
+                "Logistics / Transportation",
+                "Shared Services / BPO",
+                "Other"
+            ]
+        )
+
+        document_types_input = st.text_area(
             "Document Types",
-            "Invoice\nPurchase Order\nContract"
+            "Invoice\nPurchase Order\nContract\nPacking Slip\nApplication"
         )
 
-        new_threshold = st.slider(
+        confidence_threshold = st.slider(
             "Confidence Threshold",
             50,
             100,
             90
         )
 
-        if st.button("Save Configuration"):
+        st.markdown("### Metadata Fields")
 
-            st.session_state.customer_configs[
-                new_customer_name
-            ] = {
+        metadata_input = st.text_area(
+            "Metadata Fields by Document Type",
+            "Invoice: invoice_number, vendor_name, invoice_date, amount\nPurchase Order: po_number, vendor_name, order_date, amount\nContract: contract_id, effective_date, counterparty"
+        )
 
-                "customer_name": new_customer_name,
+        st.markdown("### Optional Guidance")
 
-                "document_types": [
-                    x.strip()
-                    for x in new_document_types.splitlines()
-                    if x.strip()
-                ],
+        keyword_guidance = st.text_area(
+            "Expected Keywords / Notes",
+            "Invoice documents often include invoice number, remit to, amount due, vendor name.\nPurchase orders often include PO number, buyer, supplier, order date."
+        )
 
-                "confidence_threshold": new_threshold,
+        if st.button("Save Customer Configuration", type="primary"):
 
-                "metadata_fields": {}
+            document_types = [
+                item.strip()
+                for item in document_types_input.splitlines()
+                if item.strip()
+            ]
+
+            metadata_fields = {}
+
+            for line in metadata_input.splitlines():
+
+                if ":" in line:
+
+                    doc_type, fields = line.split(":", 1)
+
+                    metadata_fields[doc_type.strip()] = [
+                        field.strip()
+                        for field in fields.split(",")
+                        if field.strip()
+                    ]
+
+            st.session_state.customer_configs[customer_name] = {
+                "customer_name": customer_name,
+                "industry": industry,
+                "document_types": document_types,
+                "confidence_threshold": confidence_threshold,
+                "metadata_fields": metadata_fields,
+                "keyword_guidance": keyword_guidance
             }
 
-            st.session_state.selected_config_name = (
-                new_customer_name
-            )
+            st.session_state.selected_config_name = customer_name
 
             st.success(
-                f"{new_customer_name} saved."
+                f"Configuration saved for {customer_name}."
             )
 
     st.divider()
 
-    st.subheader("Configuration Details")
+    st.subheader("Active Configuration")
 
-    st.json(
-        st.session_state.customer_configs[
-            st.session_state.selected_config_name
-        ]
+    active_config_preview = st.session_state.customer_configs[
+        st.session_state.selected_config_name
+    ]
+
+    col1, col2, col3 = st.columns(3)
+
+    col1.metric(
+        "Customer",
+        active_config_preview["customer_name"]
     )
+
+    col2.metric(
+        "Document Types",
+        len(active_config_preview.get("document_types", []))
+    )
+
+    col3.metric(
+        "Threshold",
+        f"{active_config_preview.get('confidence_threshold', 90)}%"
+    )
+
+    with st.expander("Full Active Configuration"):
+        st.json(active_config_preview)
 
 # ==================================================
 # DOCUMENT PROCESSING TAB
