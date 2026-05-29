@@ -265,6 +265,8 @@ main_tab, config_tab = st.tabs(
     ]
 )
 
+with main_tab:
+
 if "review_actions" not in st.session_state:
     st.session_state.review_actions = {}
 
@@ -305,13 +307,14 @@ if "view_mode" not in st.session_state:
 if "selected_doc" not in st.session_state:
     st.session_state.selected_doc = None
 
-st.subheader("Customer / Project Configuration")
-
-config_mode = st.radio(
-    "Configuration Mode",
-    ["Use Existing Configuration", "Create New Configuration"],
-    horizontal=True
-)
+with config_tab 
+    st.subheader("Customer / Project Configuration")
+    
+    config_mode = st.radio(
+        "Configuration Mode",
+        ["Use Existing Configuration", "Create New Configuration"],
+        horizontal=True
+    )
 
 if config_mode == "Use Existing Configuration":
 
