@@ -608,7 +608,7 @@ with main_tab:
                 
                         status = st.session_state.document_statuses[
                             doc["document_number"]
-                        ]
+                        ] = "Approved"
                 
                         if status == "Approved":
                             doc["review_needed"] = False
@@ -643,7 +643,7 @@ with main_tab:
                 
                         status = st.session_state.document_statuses[
                             doc["document_number"]
-                        ]
+                        ] = "Approved"
                 
                         if status == "Approved":
                             doc["review_needed"] = False
@@ -685,7 +685,7 @@ with main_tab:
                 
                         status = st.session_state.document_statuses[
                             doc["document_number"]
-                        ]
+                        ] = "Approved"
                 
                         if status == "Approved":
                             doc["review_needed"] = False
