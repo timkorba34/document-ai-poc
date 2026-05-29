@@ -306,6 +306,7 @@ if uploaded_file:
         if doc["review_needed"]
     ]
 
+    left_col, right_col = st.columns([0.8, 3.2])
 
     st.divider()
     st.subheader("Document Review Workbench")
@@ -317,7 +318,7 @@ if uploaded_file:
     if "selected_doc" not in st.session_state:
         st.session_state.selected_doc = documents[0]["document_number"]
 
-        left_col, right_col = st.columns([0.8, 3.2])
+    left_col, right_col = st.columns([0.8, 3.2])
 
     with left_col:
 
