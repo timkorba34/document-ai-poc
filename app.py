@@ -421,8 +421,13 @@ with main_tab:
         "Upload PDF Batch",
         type=["pdf"]
     )
-
-    if uploaded_file:
+    
+    run_processing = st.button(
+        "🚀 Run Analysis",
+        type="primary"
+    )
+    
+    if uploaded_file and run_processing:
     
         pdf_bytes = uploaded_file.read()
     
