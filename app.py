@@ -313,140 +313,140 @@ if uploaded_file:
         ]
     )
 
-with tab1:
-
-    st.subheader("Batch Overview")
-
-    cols = st.columns(8)
-
-    for i, doc in enumerate(documents):
-
-        with cols[i % 8]:
-
-            with st.container(border=True):
-
-                st.write(f"**Doc {doc['document_number']}**")
-
-                preview_page = pdf_document[doc["start_page"] - 1]
-                preview_pix = preview_page.get_pixmap(matrix=fitz.Matrix(0.5, 0.5))
-                preview_bytes = preview_pix.tobytes("png")
-                preview_image = Image.open(io.BytesIO(preview_bytes))
-
-                st.image(
-                    preview_image,
-                    width=80
-                )
-                
-                st.caption(f"Doc {doc['document_number']}")
-                st.caption(f"{doc['document_type']}")
-                st.caption(f"{doc['confidence']}%")
-
-                if doc["review_needed"]:
-                    st.warning("Needs Review")
-                else:
+    with tab1:
+    
+        st.subheader("Batch Overview")
+    
+        cols = st.columns(8)
+    
+        for i, doc in enumerate(documents):
+    
+            with cols[i % 8]:
+    
+                with st.container(border=True):
+    
+                    st.write(f"**Doc {doc['document_number']}**")
+    
+                    preview_page = pdf_document[doc["start_page"] - 1]
+                    preview_pix = preview_page.get_pixmap(matrix=fitz.Matrix(0.5, 0.5))
+                    preview_bytes = preview_pix.tobytes("png")
+                    preview_image = Image.open(io.BytesIO(preview_bytes))
+    
+                    st.image(
+                        preview_image,
+                        width=80
+                    )
+                    
+                    st.caption(f"Doc {doc['document_number']}")
+                    st.caption(f"{doc['document_type']}")
+                    st.caption(f"{doc['confidence']}%")
+    
+                    if doc["review_needed"]:
+                        st.warning("Needs Review")
+                    else:
+                        st.success("Approved")
+    
+    
+    with tab2:
+    
+        st.subheader("Approved Documents")
+    
+        cols = st.columns(8)
+    
+        for i, doc in enumerate(approved_docs):
+    
+            with cols[i % 8]:
+    
+                with st.container(border=True):
+    
+                    st.write(f"**Doc {doc['document_number']}**")
+    
+                    preview_page = pdf_document[doc["start_page"] - 1]
+                    preview_pix = preview_page.get_pixmap(matrix=fitz.Matrix(0.5, 0.5))
+                    preview_bytes = preview_pix.tobytes("png")
+                    preview_image = Image.open(io.BytesIO(preview_bytes))
+    
+                    st.image(
+                        preview_image,
+                        width=80
+                    )
+                    
+                    st.caption(f"Doc {doc['document_number']}")
+                    st.caption(f"{doc['document_type']}")
+                    st.caption(f"{doc['confidence']}%")
+    
                     st.success("Approved")
-
-
-with tab2:
-
-    st.subheader("Approved Documents")
-
-    cols = st.columns(8)
-
-    for i, doc in enumerate(approved_docs):
-
-        with cols[i % 8]:
-
-            with st.container(border=True):
-
-                st.write(f"**Doc {doc['document_number']}**")
-
-                preview_page = pdf_document[doc["start_page"] - 1]
-                preview_pix = preview_page.get_pixmap(matrix=fitz.Matrix(0.5, 0.5))
-                preview_bytes = preview_pix.tobytes("png")
-                preview_image = Image.open(io.BytesIO(preview_bytes))
-
-                st.image(
-                    preview_image,
-                    width=80
-                )
-                
-                st.caption(f"Doc {doc['document_number']}")
-                st.caption(f"{doc['document_type']}")
-                st.caption(f"{doc['confidence']}%")
-
-                st.success("Approved")
-
-
-with tab3:
-
-    st.subheader("Documents Requiring Review")
-
-    cols = st.columns(8)
-
-    for i, doc in enumerate(review_docs):
-
-        with cols[i % 8]:
-
-            with st.container(border=True):
-
-                st.write(f"**Doc {doc['document_number']}**")
-
-                preview_page = pdf_document[doc["start_page"] - 1]
-                preview_pix = preview_page.get_pixmap(matrix=fitz.Matrix(0.5, 0.5))
-                preview_bytes = preview_pix.tobytes("png")
-                preview_image = Image.open(io.BytesIO(preview_bytes))
-
-                st.image(
-                    preview_image,
-                    width=80
-                )
-                
-                st.caption(f"Doc {doc['document_number']}")
-                st.caption(f"{doc['document_type']}")
-                st.caption(f"{doc['confidence']}%")
-
-                st.warning("Needs Review")
-
-                if st.button(
-                    f"Approve Doc {doc['document_number']}",
-                    key=f"approve_review_doc_{doc['document_number']}"
-                ):
-                    st.session_state.review_actions[doc["document_number"]] = "Approved"
-
-                if st.button(
-                    f"Rerun Doc {doc['document_number']}",
-                    key=f"rerun_review_doc_{doc['document_number']}"
-                ):
-                    st.session_state.review_actions[doc["document_number"]] = "Rerun Requested"
-
-
-with tab4:
-
-    st.subheader("Manual Page Reorganization")
-
-    st.info("Use this section to mark page moves before final export.")
-
-    page_to_move = st.number_input(
-        "Page to Move",
-        min_value=1,
-        max_value=total_pages,
-        step=1
-    )
-
-    target_document = st.selectbox(
-        "Move Page To Document",
-        [doc["document_number"] for doc in documents],
-        key="manual_target_doc"
-    )
-
-    if st.button("Apply Page Move"):
-
-        st.session_state.review_actions[f"move_page_{page_to_move}"] = {
-            "page": page_to_move,
-            "target_document": target_document
-        }
-
-        st.success(
-            f"Page {page_to_move} marked to move to Document {target_document}"
+    
+    
+    with tab3:
+    
+        st.subheader("Documents Requiring Review")
+    
+        cols = st.columns(8)
+    
+        for i, doc in enumerate(review_docs):
+    
+            with cols[i % 8]:
+    
+                with st.container(border=True):
+    
+                    st.write(f"**Doc {doc['document_number']}**")
+    
+                    preview_page = pdf_document[doc["start_page"] - 1]
+                    preview_pix = preview_page.get_pixmap(matrix=fitz.Matrix(0.5, 0.5))
+                    preview_bytes = preview_pix.tobytes("png")
+                    preview_image = Image.open(io.BytesIO(preview_bytes))
+    
+                    st.image(
+                        preview_image,
+                        width=80
+                    )
+                    
+                    st.caption(f"Doc {doc['document_number']}")
+                    st.caption(f"{doc['document_type']}")
+                    st.caption(f"{doc['confidence']}%")
+    
+                    st.warning("Needs Review")
+    
+                    if st.button(
+                        f"Approve Doc {doc['document_number']}",
+                        key=f"approve_review_doc_{doc['document_number']}"
+                    ):
+                        st.session_state.review_actions[doc["document_number"]] = "Approved"
+    
+                    if st.button(
+                        f"Rerun Doc {doc['document_number']}",
+                        key=f"rerun_review_doc_{doc['document_number']}"
+                    ):
+                        st.session_state.review_actions[doc["document_number"]] = "Rerun Requested"
+    
+    
+    with tab4:
+    
+        st.subheader("Manual Page Reorganization")
+    
+        st.info("Use this section to mark page moves before final export.")
+    
+        page_to_move = st.number_input(
+            "Page to Move",
+            min_value=1,
+            max_value=total_pages,
+            step=1
         )
+    
+        target_document = st.selectbox(
+            "Move Page To Document",
+            [doc["document_number"] for doc in documents],
+            key="manual_target_doc"
+        )
+    
+        if st.button("Apply Page Move"):
+    
+            st.session_state.review_actions[f"move_page_{page_to_move}"] = {
+                "page": page_to_move,
+                "target_document": target_document
+            }
+    
+            st.success(
+                f"Page {page_to_move} marked to move to Document {target_document}"
+            )
