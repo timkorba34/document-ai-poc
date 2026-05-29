@@ -637,6 +637,19 @@ with main_tab:
                 )
             
                 documents = group_documents(results)
+
+                for doc in documents:
+                    if doc["document_number"] in st.session_state.document_statuses:
+                
+                        status = st.session_state.document_statuses[
+                            doc["document_number"]
+                        ]
+                
+                        if status == "Approved":
+                            doc["review_needed"] = False
+                
+                        elif status == "Needs Review":
+                            doc["review_needed"] = True
         
                 st.success(
                     f"PDF loaded successfully ({st.session_state.total_pages} pages)"
@@ -666,6 +679,19 @@ with main_tab:
                     st.dataframe(df, use_container_width=True)
             
                 documents = group_documents(results)
+
+                for doc in documents:
+                    if doc["document_number"] in st.session_state.document_statuses:
+                
+                        status = st.session_state.document_statuses[
+                            doc["document_number"]
+                        ]
+                
+                        if status == "Approved":
+                            doc["review_needed"] = False
+                
+                        elif status == "Needs Review":
+                            doc["review_needed"] = True
             
                 if "selected_doc" not in st.session_state:
                     st.session_state.selected_doc = documents[0]["document_number"]
