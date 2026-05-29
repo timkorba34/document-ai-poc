@@ -54,6 +54,29 @@ client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 # -------------------------
 
 # -------------------------
+# Metric Card Helper Function
+# -------------------------
+
+def metric_card(icon, label, value):
+    st.markdown(
+        f"""
+        <div style="
+            border: 1px solid #e5e7eb;
+            border-radius: 14px;
+            padding: 18px;
+            background-color: #ffffff;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+            min-height: 115px;
+        ">
+            <div style="font-size: 30px;">{icon}</div>
+            <div style="font-size: 14px; color: #6b7280;">{label}</div>
+            <div style="font-size: 26px; font-weight: 700;">{value}</div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+# -------------------------
 # Create Seperated PDF
 # -------------------------
 
@@ -448,22 +471,16 @@ with config_tab:
         st.session_state.selected_config_name
     ]
 
-    col1, col2, col3 = st.columns(3)
+    card1, card2, card3 = st.columns(3)
 
-    col1.metric(
-        "Customer",
-        active_config_preview["customer_name"]
-    )
-
-    col2.metric(
-        "Document Types",
-        len(active_config_preview.get("document_types", []))
-    )
-
-    col3.metric(
-        "Threshold",
-        f"{active_config_preview.get('confidence_threshold', 90)}%"
-    )
+    with card1:
+        metric_card("👥", "Active Customer", active_config["customer_name"])
+    
+    with card2:
+        metric_card("📄", "Document Types", len(active_config.get("document_types", [])))
+    
+    with card3:
+        metric_card("🎯", "Threshold", f"{active_config.get('confidence_threshold', 90)}%")
 
     with st.expander("Full Active Configuration"):
         st.json(active_config_preview)
