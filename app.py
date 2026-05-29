@@ -512,22 +512,28 @@ with main_tab:
 
     st.subheader("Document Processing")
 
-    col1, col2, col3 = st.columns(3)
+    card1, card2, card3 = st.columns(3)
+
+    with card1:
+        metric_card(
+            "👥",
+            "Active Customer",
+            active_config["customer_name"]
+        )
     
-    col1.metric(
-        "Active Customer",
-        active_config["customer_name"]
-    )
+    with card2:
+        metric_card(
+            "📄",
+            "Document Types",
+            len(active_config.get("document_types", []))
+        )
     
-    col2.metric(
-        "Document Types",
-        len(active_config.get("document_types", []))
-    )
-    
-    col3.metric(
-        "Threshold",
-        f"{active_config.get('confidence_threshold', 90)}%"
-    )
+    with card3:
+        metric_card(
+            "🎯",
+            "Threshold",
+            f"{active_config.get('confidence_threshold', 90)}%"
+        )
     
     st.info(
         "This configuration will be used for document segmentation and classification."
