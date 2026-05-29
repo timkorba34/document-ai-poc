@@ -434,33 +434,35 @@ with main_tab:
             if run_processing:
 
                 with st.status("Analyzing PDF batch...", expanded=True) as status:
-            
+
                     st.write("Reading uploaded PDF...")
                     pdf_bytes = uploaded_file.read()
-            
+                
                     st.write("Opening PDF...")
                     pdf_document = fitz.open(
                         stream=pdf_bytes,
                         filetype="pdf"
                     )
-            
+                
                     total_pages = len(pdf_document)
-            
+                
                     st.write(f"Processing {total_pages} pages with AI...")
                     results = process_pdf_cached(pdf_bytes)
-            
+                
                     st.write("Grouping documents...")
                     documents = group_documents(results)
-            
+                
                     status.update(
                         label="Analysis complete.",
                         state="complete",
                         expanded=False
                     )
-            
+                
                 st.success(
                     f"PDF loaded successfully ({total_pages} pages)"
                 )
+                
+                st.subheader("Batch Summary")
     
             pdf_bytes = uploaded_file.read()
         
