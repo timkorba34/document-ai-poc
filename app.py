@@ -176,6 +176,9 @@ Rules:
 - If the document does not match any configured type, classify as "Unknown".
 - Use the configured confidence threshold when deciding review_needed.
 - Use next page text to help determine whether the current page is ending a document or whether the next page starts a new document.
+- Set review_needed true only when confidence is below the configured threshold.
+- For clear document continuations or clear new document starts, confidence may be 90+.
+- Use 85–89 for moderately confident decisions that may be auto-approved if the configured threshold allows it.
 
 Project Configuration:
 {json.dumps(project_config, indent=2)}
