@@ -265,7 +265,7 @@ if uploaded_file:
     
         previous_page_text = page_text
 
-    st.subheader("AI Segmentation Results")
+    st.subheader("Batch Summary")
 
     df = pd.DataFrame(results)
 
@@ -286,7 +286,8 @@ if uploaded_file:
     else:
         st.success("All pages cleared confidence threshold.")
 
-    st.dataframe(df, use_container_width=True)
+    with st.expander("View AI Results Table"):
+        st.dataframe(df, use_container_width=True)
 
     st.subheader("Grouped Documents")
 
@@ -304,7 +305,11 @@ if uploaded_file:
             doc for doc in documents
             if doc["review_needed"]
         ]
-        
+
+
+    st.divider()
+    st.subheader("Document Review Workbench")
+
     # -------------------------
     # REVIEW WORKBENCH
     # -------------------------
@@ -312,11 +317,11 @@ if uploaded_file:
     if "selected_doc" not in st.session_state:
         st.session_state.selected_doc = documents[0]["document_number"]
 
-    left_col, right_col = st.columns([1, 3])
+    lleft_col, right_col = st.columns([0.8, 3.2])
 
     with left_col:
 
-        st.subheader("Document Queue")
+        st.subheader("Review Queue")
 
         review_filter = st.radio(
             "Filter",
@@ -381,9 +386,9 @@ if uploaded_file:
         else:
             info_col4.success("Approved")
 
-        st.markdown("### Page Preview")
+        st.subheader("Selected Document")
 
-        page_cols = st.columns(5)
+        page_cols = st.columns(6)
 
         for page_num in range(
             selected_doc["start_page"] - 1,
@@ -395,7 +400,7 @@ if uploaded_file:
                 page = pdf_document[page_num]
 
                 pix = page.get_pixmap(
-                    matrix=fitz.Matrix(0.5, 0.5)
+                    matrix=fitz.Matrix(0.35, 0.35)
                 )
 
                 img = Image.open(
@@ -413,7 +418,7 @@ if uploaded_file:
                     f"Page {page_num + 1}"
                 )
 
-        st.markdown("### Review Actions")
+        st.subheader("Actions")
 
         action_col1, action_col2, action_col3, action_col4 = st.columns(4)
 
@@ -460,7 +465,7 @@ if uploaded_file:
                 key=f"download_selected_{selected_doc['document_number']}"
             )
 
-        st.markdown("### Manual Page Move")
+        st.subheader("Page Reorganization")
 
         move_col1, move_col2, move_col3 = st.columns(3)
 
