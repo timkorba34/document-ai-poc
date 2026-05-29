@@ -7,7 +7,7 @@ from openai import OpenAI
 import json
 
 @st.cache_data(show_spinner=False)
-def process_pdf_cached(pdf_bytes):
+def process_pdf_cached(pdf_bytes, active_config):
 
     pdf_document = fitz.open(
         stream=pdf_bytes,
@@ -37,7 +37,8 @@ def process_pdf_cached(pdf_bytes):
             image,
             page_num + 1,
             page_text,
-            previous_page_text
+            previous_page_text,
+            active_config
         )
 
         results.append(result)
@@ -444,7 +445,7 @@ with main_tab:
                 total_pages = len(pdf_document)
         
                 st.write(f"Processing {total_pages} pages with AI...")
-                results = process_pdf_cached(pdf_bytes)
+                results = process_pdf_cached(pdf_bytes, active_config)
         
                 st.write("Grouping documents...")
                 documents = group_documents(results)
