@@ -8,6 +8,9 @@ import json
 
 @st.cache_data(show_spinner=False)
 
+# -------------------------
+# Process PDF Cache
+# -------------------------
 def process_pdf_cached(pdf_bytes, active_config):
 
     pdf_document = fitz.open(
@@ -260,6 +263,26 @@ def group_documents(results):
 
             if result["review_needed"]:
                 current_document["review_needed"] = True
+
+    return documents
+
+# -------------------------
+# Apply Document Statuses
+# -------------------------
+
+def apply_document_statuses(documents):
+
+    for doc in documents:
+
+        status = st.session_state.document_statuses.get(
+            doc["document_number"]
+        )
+
+        if status == "Approved":
+            doc["review_needed"] = False
+
+        elif status == "Needs Review":
+            doc["review_needed"] = True
 
     return documents
 
@@ -600,7 +623,9 @@ with main_tab:
                 results = process_pdf_cached(pdf_bytes, active_config)
         
                 st.write("Grouping documents...")
-                documents = group_documents(results)
+                documents = apply_document_statuses(
+                    group_documents(results)
+                )
 
                 for doc in documents:
 
@@ -638,11 +663,11 @@ with main_tab:
                     filetype="pdf"
                 )
             
-                documents = group_documents(results)
+                documents = apply_document_statuses(
+                    group_documents(results)
+                )
 
                 for doc in documents:
-
-                    st.write(st.session_state.document_statuses)
                     
                     if doc["document_number"] in st.session_state.document_statuses:
                 
@@ -687,11 +712,11 @@ with main_tab:
                 with st.expander("View AI Results Table"):
                     st.dataframe(df, use_container_width=True)
             
-                documents = group_documents(results)
+                documents = apply_document_statuses(
+                    group_documents(results)
+                )
 
                 for doc in documents:
-
-                    st.write(st.session_state.document_statuses)
                     
                     if doc["document_number"] in st.session_state.document_statuses:
                 
