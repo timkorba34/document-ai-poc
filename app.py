@@ -604,6 +604,8 @@ with main_tab:
 
                 for doc in documents:
 
+                    st.write(st.session_state.document_statuses)
+
                     if doc["document_number"] in st.session_state.document_statuses:
                 
                         status = st.session_state.document_statuses[
@@ -638,7 +640,10 @@ with main_tab:
             
                 documents = group_documents(results)
 
-                for doc in documents:
+                for doc in documents
+
+                    st.write(st.session_state.document_statuses)
+                    
                     if doc["document_number"] in st.session_state.document_statuses:
                 
                         status = st.session_state.document_statuses[
@@ -685,6 +690,9 @@ with main_tab:
                 documents = group_documents(results)
 
                 for doc in documents:
+
+                    st.write(st.session_state.document_statuses)
+                    
                     if doc["document_number"] in st.session_state.document_statuses:
                 
                         status = st.session_state.document_statuses[
