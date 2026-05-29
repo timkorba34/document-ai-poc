@@ -33,11 +33,18 @@ def process_pdf_cached(pdf_bytes, active_config):
 
         page_text = extract_text_from_page(page)
 
+        if page_num + 1 < len(pdf_document):
+            next_page = pdf_document[page_num + 1]
+            next_page_text = extract_text_from_page(next_page)
+        else:
+            next_page_text = ""
+
         result = analyze_page(
             image,
             page_num + 1,
             page_text,
             previous_page_text,
+            next_page_text,
             active_config
         )
 
@@ -125,7 +132,7 @@ def clean_ai_json(content):
 # -------------------------
 # Analyze Page
 # -------------------------
-def analyze_page(image, page_number, page_text, previous_page_text="", project_config=None):
+def analyze_page(image, page_number, page_text, previous_page_text="", next_page_text="", project_config=None):
 
     prompt = f"""
 You are analyzing scanned business documents for document segmentation.
@@ -168,6 +175,7 @@ Rules:
 - Extract metadata based on the configured metadata fields when available.
 - If the document does not match any configured type, classify as "Unknown".
 - Use the configured confidence threshold when deciding review_needed.
+- Use next page text to help determine whether the current page is ending a document or whether the next page starts a new document.
 
 Project Configuration:
 {json.dumps(project_config, indent=2)}
@@ -177,6 +185,9 @@ Page Number:
 
 Previous Page Text:
 {previous_page_text[:2500]}
+
+Next Page Text:
+{next_page_text[:2500]}
 
 Current Page Text:
 {page_text[:3500]}
