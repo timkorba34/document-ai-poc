@@ -293,17 +293,17 @@ if uploaded_file:
     documents = group_documents(results)
 
     if "selected_doc" not in st.session_state:
-    st.session_state.selected_doc = 1
-
-    approved_docs = [
-        doc for doc in documents        
-        if not doc["review_needed"]
-    ]
-        
-    review_docs = [
-        doc for doc in documents
-        if doc["review_needed"]
-    ]
+        st.session_state.selected_doc = 1
+    
+        approved_docs = [
+            doc for doc in documents        
+            if not doc["review_needed"]
+        ]
+            
+        review_docs = [
+            doc for doc in documents
+            if doc["review_needed"]
+        ]
         
     # -------------------------
     # REVIEW WORKBENCH
