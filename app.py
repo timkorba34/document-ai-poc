@@ -417,9 +417,10 @@ with main_tab:
         st.cache_data.clear()
         st.success("Cache cleared. Re-upload or rerun the file.")
 
-    uploaded_file = st.file_uploader(
-        "Upload PDF Batch",
-        type=["pdf"]
+    uploaded_files = st.file_uploader(
+        "Upload PDF Files",
+        type=["pdf"],
+        accept_multiple_files=True
     )
     
     if uploaded_file:
