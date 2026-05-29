@@ -315,7 +315,7 @@ if uploaded_file:
     # REVIEW WORKBENCH
     # -------------------------
 
-        st.divider()
+    st.divider()
 
     if st.session_state.selected_doc is None:
         st.session_state.selected_doc = documents[0]["document_number"]
