@@ -414,8 +414,8 @@ with main_tab:
     )
 
     if st.button("Clear Analysis Cache"):
-    st.cache_data.clear()
-    st.success("Cache cleared. Re-upload or rerun the file.")
+        st.cache_data.clear()
+        st.success("Cache cleared. Re-upload or rerun the file.")
 
     uploaded_file = st.file_uploader(
         "Upload PDF Batch",
