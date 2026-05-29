@@ -67,6 +67,7 @@ def metric_card(icon, label, value):
             background-color: #ffffff;
             box-shadow: 0 1px 4px rgba(0,0,0,0.08);
             min-height: 115px;
+            text-align: center;
         ">
             <div style="font-size: 30px;">{icon}</div>
             <div style="font-size: 14px; color: #6b7280;">{label}</div>
