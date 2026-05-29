@@ -433,8 +433,6 @@ with main_tab:
     
             pdf_bytes = uploaded_file.read()
         
-            pdf_bytes = uploaded_file.read()
-        
             pdf_document = fitz.open(
                 stream=pdf_bytes,
                 filetype="pdf"
@@ -492,199 +490,199 @@ with main_tab:
 # REVIEW WORKBENCH
 # -------------------------
     
-        st.divider()
-    
-        if st.session_state.selected_doc is None:
-            st.session_state.selected_doc = documents[0]["document_number"]
-    
-        approved_docs = [
-            doc for doc in documents
-            if not doc["review_needed"]
-        ]
-    
-        review_docs = [
-            doc for doc in documents
-            if doc["review_needed"]
-        ]
-    
-        if st.session_state.view_mode == "gallery":
-    
-            st.subheader("Document Gallery")
-    
-            gallery_filter = st.radio(
-                "Filter",
-                ["All", "Needs Review", "Approved"],
-                horizontal=True,
-                key="gallery_filter"
-            )
-    
-            if gallery_filter == "Needs Review":
-                display_docs = review_docs
-            elif gallery_filter == "Approved":
-                display_docs = approved_docs
-            else:
-                display_docs = documents
-    
-            cols = st.columns(8)
-    
-            for i, doc in enumerate(display_docs):
-    
-                with cols[i % 8]:
-    
-                    with st.container(border=True):
-    
-                        preview_page = pdf_document[doc["start_page"] - 1]
-    
-                        preview_pix = preview_page.get_pixmap(
-                            matrix=fitz.Matrix(0.35, 0.35)
-                        )
-    
-                        preview_image = Image.open(
-                            io.BytesIO(preview_pix.tobytes("png"))
-                        )
-    
-                        st.image(
-                            preview_image,
-                            width=75
-                        )
-    
-                        st.caption(
-                            f"Doc {doc['document_number']}"
-                        )
-    
-                        st.caption(
-                            f"{doc['confidence']}%"
-                        )
-    
-                        if doc["review_needed"]:
-                            st.warning("Review")
-                        else:
-                            st.success("OK")
-    
-                        if st.button(
-                            "Open",
-                            key=f"open_doc_{doc['document_number']}",
-                            use_container_width=True
-                        ):
-                            st.session_state.selected_doc = doc["document_number"]
-                            st.session_state.view_mode = "review"
-                            st.rerun()
-    
-    
-        elif st.session_state.view_mode == "review":
-    
-            selected_doc = next(
-                d for d in documents
-                if d["document_number"] == st.session_state.selected_doc
-            )
-    
-            if st.button("← Back to Gallery"):
-                st.session_state.view_mode = "gallery"
-                st.rerun()
-    
-            st.subheader(
-                f"Document {selected_doc['document_number']} Review"
-            )
-    
-            info_col1, info_col2, info_col3, info_col4 = st.columns(4)
-    
-            info_col1.metric(
-                "Type",
-                selected_doc["document_type"]
-            )
-    
-            info_col2.metric(
-                "Pages",
-                f"{selected_doc['start_page']}–{selected_doc['end_page']}"
-            )
-    
-            info_col3.metric(
-                "Confidence",
-                f"{selected_doc['confidence']}%"
-            )
-    
-            if selected_doc["review_needed"]:
-                info_col4.warning("Needs Review")
-            else:
-                info_col4.success("Approved")
-    
-            st.subheader("Pages")
-    
-            page_cols = st.columns(6)
-    
-            for page_num in range(
-                selected_doc["start_page"] - 1,
-                selected_doc["end_page"]
-            ):
-    
-                with page_cols[
-                    page_num % 6
-                ]:
-    
-                    page = pdf_document[page_num]
-    
-                    pix = page.get_pixmap(
-                        matrix=fitz.Matrix(0.45, 0.45)
-                    )
-    
-                    img = Image.open(
-                        io.BytesIO(
-                            pix.tobytes("png")
-                        )
-                    )
-    
-                    st.image(
-                        img,
-                        use_container_width=True
-                    )
-    
-                    st.caption(
-                        f"Page {page_num + 1}"
-                    )
-    
-            st.subheader("Actions")
-    
-            action_col1, action_col2, action_col3, action_col4 = st.columns(4)
-    
-            with action_col1:
-    
-                if st.button(
-                    "Approve",
-                    key=f"approve_selected_{selected_doc['document_number']}"
-                ):
-                    st.session_state.review_actions[selected_doc["document_number"]] = "Approved"
-                    st.success("Document approved.")
-    
-            with action_col2:
-    
-                if st.button(
-                    "Needs Review",
-                    key=f"review_selected_{selected_doc['document_number']}"
-                ):
-                    st.session_state.review_actions[selected_doc["document_number"]] = "Needs Review"
-                    st.warning("Document marked for review.")
-    
-            with action_col3:
-    
-                if st.button(
-                    "Rerun AI",
-                    key=f"rerun_selected_{selected_doc['document_number']}"
-                ):
-                    st.session_state.review_actions[selected_doc["document_number"]] = "Rerun Requested"
-                    st.info("Rerun requested.")
-    
-            with action_col4:
-    
-                pdf_bytes_output = create_separated_pdf(
-                    pdf_document,
-                    selected_doc["start_page"],
+            st.divider()
+        
+            if st.session_state.selected_doc is None:
+                st.session_state.selected_doc = documents[0]["document_number"]
+        
+            approved_docs = [
+                doc for doc in documents
+                if not doc["review_needed"]
+            ]
+        
+            review_docs = [
+                doc for doc in documents
+                if doc["review_needed"]
+            ]
+        
+            if st.session_state.view_mode == "gallery":
+        
+                st.subheader("Document Gallery")
+        
+                gallery_filter = st.radio(
+                    "Filter",
+                    ["All", "Needs Review", "Approved"],
+                    horizontal=True,
+                    key="gallery_filter"
+                )
+        
+                if gallery_filter == "Needs Review":
+                    display_docs = review_docs
+                elif gallery_filter == "Approved":
+                    display_docs = approved_docs
+                else:
+                    display_docs = documents
+        
+                cols = st.columns(8)
+        
+                for i, doc in enumerate(display_docs):
+        
+                    with cols[i % 8]:
+        
+                        with st.container(border=True):
+        
+                            preview_page = pdf_document[doc["start_page"] - 1]
+        
+                            preview_pix = preview_page.get_pixmap(
+                                matrix=fitz.Matrix(0.35, 0.35)
+                            )
+        
+                            preview_image = Image.open(
+                                io.BytesIO(preview_pix.tobytes("png"))
+                            )
+        
+                            st.image(
+                                preview_image,
+                                width=75
+                            )
+        
+                            st.caption(
+                                f"Doc {doc['document_number']}"
+                            )
+        
+                            st.caption(
+                                f"{doc['confidence']}%"
+                            )
+        
+                            if doc["review_needed"]:
+                                st.warning("Review")
+                            else:
+                                st.success("OK")
+        
+                            if st.button(
+                                "Open",
+                                key=f"open_doc_{doc['document_number']}",
+                                use_container_width=True
+                            ):
+                                st.session_state.selected_doc = doc["document_number"]
+                                st.session_state.view_mode = "review"
+                                st.rerun()
+        
+        
+            elif st.session_state.view_mode == "review":
+        
+                selected_doc = next(
+                    d for d in documents
+                    if d["document_number"] == st.session_state.selected_doc
+                )
+        
+                if st.button("← Back to Gallery"):
+                    st.session_state.view_mode = "gallery"
+                    st.rerun()
+        
+                st.subheader(
+                    f"Document {selected_doc['document_number']} Review"
+                )
+        
+                info_col1, info_col2, info_col3, info_col4 = st.columns(4)
+        
+                info_col1.metric(
+                    "Type",
+                    selected_doc["document_type"]
+                )
+        
+                info_col2.metric(
+                    "Pages",
+                    f"{selected_doc['start_page']}–{selected_doc['end_page']}"
+                )
+        
+                info_col3.metric(
+                    "Confidence",
+                    f"{selected_doc['confidence']}%"
+                )
+        
+                if selected_doc["review_needed"]:
+                    info_col4.warning("Needs Review")
+                else:
+                    info_col4.success("Approved")
+        
+                st.subheader("Pages")
+        
+                page_cols = st.columns(6)
+        
+                for page_num in range(
+                    selected_doc["start_page"] - 1,
                     selected_doc["end_page"]
-                )
-    
-                st.download_button(
-                    label="Download",
-                    data=pdf_bytes_output,
-                    file_name=f"Document_{selected_doc['document_number']}_{selected_doc['document_type'].replace(' ', '_')}.pdf",
-                    mime="application/pdf",
-                    key=f"download_selected_{selected_doc['document_number']}"
-                )
+                ):
+        
+                    with page_cols[
+                        page_num % 6
+                    ]:
+        
+                        page = pdf_document[page_num]
+        
+                        pix = page.get_pixmap(
+                            matrix=fitz.Matrix(0.45, 0.45)
+                        )
+        
+                        img = Image.open(
+                            io.BytesIO(
+                                pix.tobytes("png")
+                            )
+                        )
+        
+                        st.image(
+                            img,
+                            use_container_width=True
+                        )
+        
+                        st.caption(
+                            f"Page {page_num + 1}"
+                        )
+        
+                st.subheader("Actions")
+        
+                action_col1, action_col2, action_col3, action_col4 = st.columns(4)
+        
+                with action_col1:
+        
+                    if st.button(
+                        "Approve",
+                        key=f"approve_selected_{selected_doc['document_number']}"
+                    ):
+                        st.session_state.review_actions[selected_doc["document_number"]] = "Approved"
+                        st.success("Document approved.")
+        
+                with action_col2:
+        
+                    if st.button(
+                        "Needs Review",
+                        key=f"review_selected_{selected_doc['document_number']}"
+                    ):
+                        st.session_state.review_actions[selected_doc["document_number"]] = "Needs Review"
+                        st.warning("Document marked for review.")
+        
+                with action_col3:
+        
+                    if st.button(
+                        "Rerun AI",
+                        key=f"rerun_selected_{selected_doc['document_number']}"
+                    ):
+                        st.session_state.review_actions[selected_doc["document_number"]] = "Rerun Requested"
+                        st.info("Rerun requested.")
+        
+                with action_col4:
+        
+                    pdf_bytes_output = create_separated_pdf(
+                        pdf_document,
+                        selected_doc["start_page"],
+                        selected_doc["end_page"]
+                    )
+        
+                    st.download_button(
+                        label="Download",
+                        data=pdf_bytes_output,
+                        file_name=f"Document_{selected_doc['document_number']}_{selected_doc['document_type'].replace(' ', '_')}.pdf",
+                        mime="application/pdf",
+                        key=f"download_selected_{selected_doc['document_number']}"
+                    )
