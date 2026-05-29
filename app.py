@@ -608,7 +608,7 @@ with main_tab:
                 
                         status = st.session_state.document_statuses[
                             doc["document_number"]
-                        ] = "Approved"
+                        ]
                 
                         if status == "Approved":
                             doc["review_needed"] = False
@@ -643,7 +643,7 @@ with main_tab:
                 
                         status = st.session_state.document_statuses[
                             doc["document_number"]
-                        ] = "Approved"
+                        ]
                 
                         if status == "Approved":
                             doc["review_needed"] = False
@@ -660,8 +660,12 @@ with main_tab:
             
                 total_pages = len(df)
                 avg_confidence = round(df["confidence"].mean(), 1)
-                needs_review = int(df["review_needed"].sum())
-                auto_approved = total_pages - needs_review
+                needs_review = len([
+                    doc for doc in documents
+                    if doc["review_needed"]
+                ])
+                
+                auto_approved = len(documents) - needs_review
                 
                 col1, col2, col3, col4 = st.columns(4)
             
@@ -685,7 +689,7 @@ with main_tab:
                 
                         status = st.session_state.document_statuses[
                             doc["document_number"]
-                        ] = "Approved"
+                        ]
                 
                         if status == "Approved":
                             doc["review_needed"] = False
