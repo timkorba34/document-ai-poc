@@ -827,8 +827,22 @@ with main_tab:
                             "Approve",
                             key=f"approve_selected_{selected_doc['document_number']}"
                         ):
-                            st.session_state.review_actions[selected_doc["document_number"]] = "Approved"
+                        
+                            st.session_state.review_actions[
+                                selected_doc["document_number"]
+                            ] = "Approved"
+                        
+                            for result in st.session_state.analysis_results:
+
+                                if (
+                                    result["page"] >= selected_doc["start_page"]
+                                    and
+                                    result["page"] <= selected_doc["end_page"]
+                                ):
+                                    result["review_needed"] = True
+                        
                             st.success("Document approved.")
+                            st.rerun()
             
                     with action_col2:
             
