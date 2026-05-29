@@ -785,7 +785,7 @@ with main_tab:
             
                     st.subheader("Pages")
             
-                    page_cols = st.columns(6)
+                    page_cols = st.columns(2)
             
                     for page_num in range(
                         selected_doc["start_page"] - 1,
