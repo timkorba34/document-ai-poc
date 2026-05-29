@@ -474,13 +474,25 @@ with config_tab:
     card1, card2, card3 = st.columns(3)
 
     with card1:
-        metric_card("👥", "Active Customer", active_config["customer_name"])
+        metric_card(
+            "👥",
+            "Active Customer",
+            active_config_preview["customer_name"]
+        )
     
     with card2:
-        metric_card("📄", "Document Types", len(active_config.get("document_types", [])))
+        metric_card(
+            "📄",
+            "Document Types",
+            len(active_config_preview.get("document_types", []))
+        )
     
     with card3:
-        metric_card("🎯", "Threshold", f"{active_config.get('confidence_threshold', 90)}%")
+        metric_card(
+            "🎯",
+            "Threshold",
+            f"{active_config_preview.get('confidence_threshold', 90)}%"
+        )
 
     with st.expander("Full Active Configuration"):
         st.json(active_config_preview)
