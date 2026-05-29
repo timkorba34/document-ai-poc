@@ -424,10 +424,10 @@ with main_tab:
     
     if uploaded_file:
 
-    run_processing = st.button(
-        "🚀 Run Analysis",
-        type="primary"
-    )
+        run_processing = st.button(
+            "🚀 Run Analysis",
+            type="primary"
+        )
 
         if run_processing:
     
