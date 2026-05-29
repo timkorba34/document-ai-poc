@@ -296,15 +296,15 @@ if uploaded_file:
     if "selected_doc" not in st.session_state:
         st.session_state.selected_doc = documents[0]["document_number"]
     
-        approved_docs = [
-            doc for doc in documents
-            if not doc["review_needed"]
-        ]
+    approved_docs = [
+        doc for doc in documents
+        if not doc["review_needed"]
+    ]
     
-        review_docs = [
-            doc for doc in documents
-            if doc["review_needed"]
-        ]
+    review_docs = [
+        doc for doc in documents
+        if doc["review_needed"]
+    ]
 
 
     st.divider()
