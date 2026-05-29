@@ -435,38 +435,7 @@ with main_tab:
             f"PDF loaded successfully ({total_pages} pages)"
         )
     
-        st.subheader("Processing Pages")
-    
-        results = []
-        previous_page_text = ""
-    
-        for page_num in range(total_pages):
-    
-            page = pdf_document[page_num]
-        
-            pix = page.get_pixmap(
-                matrix=fitz.Matrix(1.5, 1.5)
-            )
-        
-            img_bytes = pix.tobytes("png")
-        
-            image = Image.open(
-                io.BytesIO(img_bytes)
-            )
-        
-            page_text = extract_text_from_page(page)
-        
-            result = analyze_page(
-                image,
-                page_num + 1,
-                page_text,
-                previous_page_text,
-                active_config
-            )
-        
-            results.append(result)
-        
-            previous_page_text = page_text
+        results = process_pdf_cached(pdf_bytes)
     
         st.subheader("Batch Summary")
     
@@ -508,9 +477,9 @@ with main_tab:
         ]
     
     
-        # -------------------------
-        # REVIEW WORKBENCH
-        # -------------------------
+# -------------------------
+# REVIEW WORKBENCH
+# -------------------------
     
         st.divider()
     
