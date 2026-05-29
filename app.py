@@ -7,6 +7,7 @@ from openai import OpenAI
 import json
 
 @st.cache_data(show_spinner=False)
+
 def process_pdf_cached(pdf_bytes, active_config):
 
     pdf_document = fitz.open(
@@ -333,6 +334,9 @@ if "customer_configs" not in st.session_state:
         }
     }
 
+if "document_statuses" not in st.session_state:
+    st.session_state.document_statuses = {}
+
 if "selected_config_name" not in st.session_state:
     st.session_state.selected_config_name = "ViaTRON Demo"
 
@@ -598,6 +602,20 @@ with main_tab:
                 st.write("Grouping documents...")
                 documents = group_documents(results)
 
+                for doc in documents:
+
+                    if doc["document_number"] in st.session_state.document_statuses:
+                
+                        status = st.session_state.document_statuses[
+                            doc["document_number"]
+                        ]
+                
+                        if status == "Approved":
+                            doc["review_needed"] = False
+                
+                        elif status == "Needs Review":
+                            doc["review_needed"] = True
+
                 st.session_state.pdf_bytes = pdf_bytes
                 st.session_state.analysis_results = results
                 st.session_state.total_pages = total_pages
@@ -850,8 +868,13 @@ with main_tab:
                             "Needs Review",
                             key=f"review_selected_{selected_doc['document_number']}"
                         ):
-                            st.session_state.review_actions[selected_doc["document_number"]] = "Needs Review"
+                        
+                            st.session_state.document_statuses[
+                                selected_doc["document_number"]
+                            ] = "Needs Review"
+                        
                             st.warning("Document marked for review.")
+                            st.rerun()
             
                     with action_col3:
             
