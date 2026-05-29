@@ -293,8 +293,8 @@ if uploaded_file:
 
     documents = group_documents(results)
 
-        if "selected_doc" not in st.session_state:
-            st.session_state.selected_doc = documents[0]["document_number"]
+    if "selected_doc" not in st.session_state:
+        st.session_state.selected_doc = documents[0]["document_number"]
     
         approved_docs = [
             doc for doc in documents
