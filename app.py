@@ -210,8 +210,6 @@ st.markdown("""
 
 st.title("AI Document Segmentation PoC")
 
-st.session_state
-
 if "review_actions" not in st.session_state:
     st.session_state.review_actions = {}
 
