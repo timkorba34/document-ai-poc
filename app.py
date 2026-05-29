@@ -606,7 +606,9 @@ with main_tab:
             
                 documents = group_documents(results)
         
-                st.success(f"PDF loaded successfully ({total_pages} pages)")
+                st.success(
+                    f"PDF loaded successfully ({st.session_state.total_pages} pages)"
+                )
                 st.subheader("Batch Summary")
             
                 df = pd.DataFrame(results)
