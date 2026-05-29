@@ -100,7 +100,7 @@ def clean_ai_json(content):
 # -------------------------
 # Analyze Page
 # -------------------------
-def analyze_page(image, page_number, page_text, previous_page_text=""):
+def analyze_page(image, page_number, page_text, previous_page_text="", project_config=None):
 
     prompt = f"""
 You are analyzing scanned business documents for document segmentation.
@@ -138,6 +138,14 @@ Rules:
 - Extract important metadata fields if visible.
 - Metadata should vary based on document type.
 - Return metadata as key/value JSON.
+- Use the Project Configuration to guide document classification.
+- Prefer the configured document types when the page matches one of them.
+- Extract metadata based on the configured metadata fields when available.
+- If the document does not match any configured type, classify as "Unknown".
+- Use the configured confidence threshold when deciding review_needed.
+
+Project Configuration:
+{json.dumps(project_config, indent=2)}
 
 Page Number:
 {page_number}
@@ -250,8 +258,46 @@ st.markdown("""
 
 st.title("AI Document Segmentation PoC")
 
+main_tab, config_tab = st.tabs(
+    [
+        "Document Processing",
+        "Configuration Management"
+    ]
+)
+
 if "review_actions" not in st.session_state:
     st.session_state.review_actions = {}
+
+if "customer_configs" not in st.session_state:
+    st.session_state.customer_configs = {
+        "ViaTRON Demo": {
+            "customer_name": "ViaTRON Demo",
+            "document_types": [
+                "Resume",
+                "Employment Application",
+                "Vendor Invoice",
+                "Police Case Report",
+                "Student Record"
+            ],
+            "confidence_threshold": 90,
+            "metadata_fields": {
+                "Vendor Invoice": [
+                    "invoice_number",
+                    "vendor_name",
+                    "invoice_date",
+                    "amount"
+                ],
+                "Student Record": [
+                    "student_id",
+                    "student_name",
+                    "enrollment_date"
+                ]
+            }
+        }
+    }
+
+if "selected_config_name" not in st.session_state:
+    st.session_state.selected_config_name = "ViaTRON Demo"
 
 if "view_mode" not in st.session_state:
     st.session_state.view_mode = "gallery"
@@ -259,8 +305,89 @@ if "view_mode" not in st.session_state:
 if "selected_doc" not in st.session_state:
     st.session_state.selected_doc = None
 
+st.subheader("Customer / Project Configuration")
+
+config_mode = st.radio(
+    "Configuration Mode",
+    ["Use Existing Configuration", "Create New Configuration"],
+    horizontal=True
+)
+
+if config_mode == "Use Existing Configuration":
+
+    selected_config_name = st.selectbox(
+        "Select Configuration",
+        list(st.session_state.customer_configs.keys())
+    )
+
+    st.session_state.selected_config_name = selected_config_name
+
+else:
+
+    new_customer_name = st.text_input(
+        "Customer / Project Name",
+        "New Customer"
+    )
+
+    new_document_types_input = st.text_area(
+        "Expected Document Types",
+        "Invoice\nPurchase Order\nContract\nApplication\nReport"
+    )
+
+    new_confidence_threshold = st.slider(
+        "Confidence Threshold",
+        50,
+        100,
+        90
+    )
+
+    new_metadata_fields_input = st.text_area(
+        "Metadata Fields by Document Type",
+        "Invoice: invoice_number, vendor_name, invoice_date, amount\nPurchase Order: po_number, vendor_name, order_date, amount"
+    )
+
+    if st.button("Save Configuration"):
+
+        document_types = [
+            doc.strip()
+            for doc in new_document_types_input.splitlines()
+            if doc.strip()
+        ]
+
+        metadata_fields = {}
+
+        for line in new_metadata_fields_input.splitlines():
+            if ":" in line:
+                doc_type, fields = line.split(":", 1)
+
+                metadata_fields[doc_type.strip()] = [
+                    field.strip()
+                    for field in fields.split(",")
+                    if field.strip()
+                ]
+
+        st.session_state.customer_configs[new_customer_name] = {
+            "customer_name": new_customer_name,
+            "document_types": document_types,
+            "confidence_threshold": new_confidence_threshold,
+            "metadata_fields": metadata_fields
+        }
+
+        st.session_state.selected_config_name = new_customer_name
+
+        st.success(
+            f"Configuration saved for {new_customer_name}"
+        )
+
+active_config = st.session_state.customer_configs[
+    st.session_state.selected_config_name
+]
+
+with st.expander("Active Configuration Details"):
+    st.json(active_config)
+
 uploaded_file = st.file_uploader(
-    "Upload a scanned PDF",
+    f"Upload PDF Batch for {active_config['customer_name']}",
     type=["pdf"]
 )
 
@@ -306,7 +433,8 @@ if uploaded_file:
             image,
             page_num + 1,
             page_text,
-            previous_page_text
+            previous_page_text,
+            active_config
         )
     
         results.append(result)
