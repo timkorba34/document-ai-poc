@@ -289,8 +289,6 @@ if uploaded_file:
     with st.expander("View AI Results Table"):
         st.dataframe(df, use_container_width=True)
 
-    st.subheader("Grouped Documents")
-
     documents = group_documents(results)
 
     if "selected_doc" not in st.session_state:
@@ -306,19 +304,14 @@ if uploaded_file:
         if doc["review_needed"]
     ]
 
-    left_col, right_col = st.columns([0.8, 3.2])
-
     st.divider()
     st.subheader("Document Review Workbench")
+
+    left_col, right_col = st.columns([0.8, 3.2])
 
     # -------------------------
     # REVIEW WORKBENCH
     # -------------------------
-
-    if "selected_doc" not in st.session_state:
-        st.session_state.selected_doc = documents[0]["document_number"]
-
-    left_col, right_col = st.columns([0.8, 3.2])
 
     with left_col:
 
@@ -348,7 +341,7 @@ if uploaded_file:
             status_icon = "⚠️" if doc["review_needed"] else "✅"
 
             if st.button(
-                f"{status_icon} Doc {doc['document_number']}",
+                f"{status_icon} {doc['document_type']} ({doc['confidence']}%)",
                 use_container_width=True,
                 key=f"queue_doc_{doc['document_number']}"
             ):
@@ -396,7 +389,7 @@ if uploaded_file:
             selected_doc["end_page"]
         ):
 
-            with page_cols[page_num % 5]:
+            with page_cols[page_num % 6]:
 
                 page = pdf_document[page_num]
 
