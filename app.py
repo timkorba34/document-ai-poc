@@ -62,7 +62,7 @@ def metric_card(icon, label, value):
         f"""
         <div style="
             border: 1px solid #e5e7eb;
-            border-radius: 14px;
+            border-radius: 10px;
             padding: 18px;
             background-color: #ffffff;
             box-shadow: 0 1px 4px rgba(0,0,0,0.08);
