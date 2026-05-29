@@ -328,6 +328,15 @@ if "view_mode" not in st.session_state:
 if "selected_doc" not in st.session_state:
     st.session_state.selected_doc = None
 
+if "analysis_results" not in st.session_state:
+    st.session_state.analysis_results = None
+
+if "pdf_bytes" not in st.session_state:
+    st.session_state.pdf_bytes = None
+
+if "total_pages" not in st.session_state:
+    st.session_state.total_pages = 0
+
 # -------------------------
 # TABS
 # -------------------------
@@ -574,12 +583,28 @@ with main_tab:
         
                 st.write("Grouping documents...")
                 documents = group_documents(results)
+
+                st.session_state.pdf_bytes = pdf_bytes
+                st.session_state.analysis_results = results
+                st.session_state.total_pages = total_pages
         
                 status.update(
                     label="Analysis complete.",
                     state="complete",
                     expanded=False
                 )
+
+            if st.session_state.analysis_results is not None:
+
+                results = st.session_state.analysis_results
+                pdf_bytes = st.session_state.pdf_bytes
+            
+                pdf_document = fitz.open(
+                    stream=pdf_bytes,
+                    filetype="pdf"
+                )
+            
+                documents = group_documents(results)
         
             st.success(f"PDF loaded successfully ({total_pages} pages)")
             st.subheader("Batch Summary")
