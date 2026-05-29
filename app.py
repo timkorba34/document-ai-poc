@@ -480,8 +480,27 @@ with main_tab:
         ]
     )
 
-    st.subheader(
-        f"Active Configuration: {active_config['customer_name']}"
+    st.subheader("Document Processing")
+
+    col1, col2, col3 = st.columns(3)
+    
+    col1.metric(
+        "Active Customer",
+        active_config["customer_name"]
+    )
+    
+    col2.metric(
+        "Document Types",
+        len(active_config.get("document_types", []))
+    )
+    
+    col3.metric(
+        "Threshold",
+        f"{active_config.get('confidence_threshold', 90)}%"
+    )
+    
+    st.info(
+        "This configuration will be used for document segmentation and classification."
     )
 
     if st.button("Clear Analysis Cache"):
