@@ -640,7 +640,7 @@ with main_tab:
             
                 documents = group_documents(results)
 
-                for doc in documents
+                for doc in documents:
 
                     st.write(st.session_state.document_statuses)
                     
