@@ -435,8 +435,6 @@ with main_tab:
             f"PDF loaded successfully ({total_pages} pages)"
         )
     
-        results = process_pdf_cached(pdf_bytes)
-    
         st.subheader("Batch Summary")
     
         df = pd.DataFrame(results)
