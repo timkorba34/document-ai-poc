@@ -606,45 +606,45 @@ with main_tab:
             
                 documents = group_documents(results)
         
-            st.success(f"PDF loaded successfully ({total_pages} pages)")
-            st.subheader("Batch Summary")
-        
-            df = pd.DataFrame(results)
-        
-            total_pages = len(df)
-            avg_confidence = round(df["confidence"].mean(), 1)
-            needs_review = int(df["review_needed"].sum())
-            auto_approved = total_pages - needs_review
+                st.success(f"PDF loaded successfully ({total_pages} pages)")
+                st.subheader("Batch Summary")
             
-            col1, col2, col3, col4 = st.columns(4)
-        
-            col1.metric("Total Pages", total_pages)
-            col2.metric("Average Confidence", f"{avg_confidence}%")
-            col3.metric("Auto Approved", auto_approved)
-            col4.metric("Needs Review", needs_review)
-        
-            if needs_review > 0:
-                st.warning(f"{needs_review} pages need human review before final export.")
-            else:
-                st.success("All pages cleared confidence threshold.")
-        
-            with st.expander("View AI Results Table"):
-                st.dataframe(df, use_container_width=True)
-        
-            documents = group_documents(results)
-        
-            if "selected_doc" not in st.session_state:
-                st.session_state.selected_doc = documents[0]["document_number"]
+                df = pd.DataFrame(results)
             
-            approved_docs = [
-                doc for doc in documents
-                if not doc["review_needed"]
-            ]
+                total_pages = len(df)
+                avg_confidence = round(df["confidence"].mean(), 1)
+                needs_review = int(df["review_needed"].sum())
+                auto_approved = total_pages - needs_review
+                
+                col1, col2, col3, col4 = st.columns(4)
             
-            review_docs = [
-                doc for doc in documents
-                if doc["review_needed"]
-            ]
+                col1.metric("Total Pages", total_pages)
+                col2.metric("Average Confidence", f"{avg_confidence}%")
+                col3.metric("Auto Approved", auto_approved)
+                col4.metric("Needs Review", needs_review)
+            
+                if needs_review > 0:
+                    st.warning(f"{needs_review} pages need human review before final export.")
+                else:
+                    st.success("All pages cleared confidence threshold.")
+            
+                with st.expander("View AI Results Table"):
+                    st.dataframe(df, use_container_width=True)
+            
+                documents = group_documents(results)
+            
+                if "selected_doc" not in st.session_state:
+                    st.session_state.selected_doc = documents[0]["document_number"]
+                
+                approved_docs = [
+                    doc for doc in documents
+                    if not doc["review_needed"]
+                ]
+                
+                review_docs = [
+                    doc for doc in documents
+                    if doc["review_needed"]
+                ]
     
     
 # -------------------------
