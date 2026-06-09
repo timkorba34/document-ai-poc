@@ -72,34 +72,22 @@ def create_barcode_separator_page(group_number: int) -> fitz.Document:
 # --------------------------------------------
 
 def export_full_pdf_with_barcode_pages(original_pdf_bytes, grouped_documents):
-    """
-    Exports the full PDF with separator/barcode pages inserted between groups.
-
-    grouped_documents should be a list like:
-    [
-        {"pages": [0, 1, 2], "doc_type": "Invoice"},
-        {"pages": [3, 4], "doc_type": "Purchase Order"},
-        {"pages": [5], "doc_type": "Packing Slip"}
-    ]
-
-    Page numbers should be zero-based.
-    """
 
     source_pdf = fitz.open(stream=original_pdf_bytes, filetype="pdf")
     output_pdf = fitz.open()
 
     for idx, group in enumerate(grouped_documents):
-        for page_number in group["pages"]:
-            output_pdf.insert_pdf(
-                source_pdf,
-                from_page=page_number,
-                to_page=page_number
-            )
 
-        # Add separator page between groups, not after the last group
+        output_pdf.insert_pdf(
+            source_pdf,
+            from_page=group["start_page"] - 1,
+            to_page=group["end_page"] - 1
+        )
+
         if idx < len(grouped_documents) - 1:
             separator_pdf = create_barcode_separator_page(idx + 2)
             output_pdf.insert_pdf(separator_pdf)
+            separator_pdf.close()
 
     output_bytes = output_pdf.write()
 
@@ -811,6 +799,20 @@ with main_tab:
             
                 with st.expander("View AI Results Table"):
                     st.dataframe(df, use_container_width=True)
+
+                st.subheader("Export Full Bundle")
+
+                full_pdf_bytes = export_full_pdf_with_barcode_pages(
+                    original_pdf_bytes=pdf_bytes,
+                    grouped_documents=documents
+                )
+                
+                st.download_button(
+                    "Export Full Bundle w/ Separators",
+                    data=full_pdf_bytes,
+                    file_name="segmented_document_bundle_with_separators.pdf",
+                    mime="application/pdf"
+                )
             
                 documents = apply_document_statuses(
                     group_documents(results)
