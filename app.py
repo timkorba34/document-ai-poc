@@ -9,7 +9,7 @@ from io import BytesIO
 import fitz  # PyMuPDF
 import streamlit as st
 
-@st.cache_data(show_spinner=False)
+#@st.cache_data(show_spinner=False)
 
 # -------------------------
 # Create Barcode Separator Page
@@ -99,6 +99,9 @@ def export_full_pdf_with_barcode_pages(original_pdf_bytes, grouped_documents):
 # -------------------------
 # Process PDF Cache
 # -------------------------
+
+@st.cache_data(show_spinner=False)
+
 def process_pdf_cached(pdf_bytes, active_config):
 
     pdf_document = fitz.open(
