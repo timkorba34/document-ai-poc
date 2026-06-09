@@ -970,7 +970,14 @@ with main_tab:
                         info_col4.success("Approved")
             
                     st.subheader("Pages")
-            
+
+                    zoom = st.select_slider(
+                        "Zoom",
+                        options=[0.5, 1.0, 1.5, 2.0, 2.5, 3.0],
+                        value=2.0,
+                        key="review_zoom"
+                    )
+                    
                     page_cols = st.columns(2)
             
                     for page_num in range(
