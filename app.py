@@ -897,7 +897,7 @@ with main_tab:
                                 preview_page = pdf_document[doc["start_page"] - 1]
             
                                 preview_pix = preview_page.get_pixmap(
-                                    matrix=fitz.Matrix(0.35, 0.35)
+                                    matrix=fitz.Matrix(3.0, 3.0)
                                 )
             
                                 preview_image = Image.open(
@@ -985,7 +985,7 @@ with main_tab:
                             page = pdf_document[page_num]
             
                             pix = page.get_pixmap(
-                                matrix=fitz.Matrix(0.45, 0.45)
+                                matrix=fitz.Matrix(3.0, 3.0)
                             )
             
                             img = Image.open(
