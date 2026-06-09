@@ -82,7 +82,7 @@ def metric_card(icon, label, value):
         ">
             <div style="font-size: 30px;">{icon}</div>
             <div style="font-size: 14px; color: #6b7280;">{label}</div>
-            <div style="font-size: 26px; font-weight: 700;">{value}</div>
+            <div style="font-size: 26px; font-weight: 700; color: #111827;">{value}</div>
         </div>
         """,
         unsafe_allow_html=True
