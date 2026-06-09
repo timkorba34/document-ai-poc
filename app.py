@@ -5,8 +5,108 @@ import io
 import pandas as pd
 from openai import OpenAI
 import json
+from io import BytesIO
+import fitz  # PyMuPDF
+import streamlit as st
 
 @st.cache_data(show_spinner=False)
+
+# -------------------------
+# Create Barcode Separator Page
+# -------------------------
+
+def create_barcode_separator_page(group_number: int) -> fitz.Document:
+    """
+    Creates a generic barcode/separator page.
+    This is not a real barcode yet — just a visual placeholder.
+    """
+
+    doc = fitz.open()
+    page = doc.new_page(width=612, height=792)  # Letter size
+
+    title = "DOCUMENT SEPARATOR"
+    subtitle = "New Document Starts After This Page"
+    group_text = f"Next Document Group: {group_number:03d}"
+
+    barcode_placeholder = "|||| ||| |||| || ||||| ||| |||| || |||||"
+
+    page.insert_text(
+        (150, 220),
+        title,
+        fontsize=24,
+        fontname="helv",
+    )
+
+    page.insert_text(
+        (165, 260),
+        subtitle,
+        fontsize=14,
+        fontname="helv",
+    )
+
+    page.insert_text(
+        (210, 310),
+        group_text,
+        fontsize=16,
+        fontname="helv",
+    )
+
+    page.insert_text(
+        (105, 390),
+        barcode_placeholder,
+        fontsize=28,
+        fontname="cour",
+    )
+
+    page.insert_text(
+        (210, 450),
+        "PLACEHOLDER BARCODE PAGE",
+        fontsize=12,
+        fontname="helv",
+    )
+
+    return doc
+
+# --------------------------------------------
+# Full File PDF Export with Barcode Separator
+# --------------------------------------------
+
+def export_full_pdf_with_barcode_pages(original_pdf_bytes, grouped_documents):
+    """
+    Exports the full PDF with separator/barcode pages inserted between groups.
+
+    grouped_documents should be a list like:
+    [
+        {"pages": [0, 1, 2], "doc_type": "Invoice"},
+        {"pages": [3, 4], "doc_type": "Purchase Order"},
+        {"pages": [5], "doc_type": "Packing Slip"}
+    ]
+
+    Page numbers should be zero-based.
+    """
+
+    source_pdf = fitz.open(stream=original_pdf_bytes, filetype="pdf")
+    output_pdf = fitz.open()
+
+    for idx, group in enumerate(grouped_documents):
+        for page_number in group["pages"]:
+            output_pdf.insert_pdf(
+                source_pdf,
+                from_page=page_number,
+                to_page=page_number
+            )
+
+        # Add separator page between groups, not after the last group
+        if idx < len(grouped_documents) - 1:
+            separator_pdf = create_barcode_separator_page(idx + 2)
+            output_pdf.insert_pdf(separator_pdf)
+
+    output_bytes = output_pdf.write()
+
+    source_pdf.close()
+    output_pdf.close()
+
+    return output_bytes
 
 # -------------------------
 # Process PDF Cache
